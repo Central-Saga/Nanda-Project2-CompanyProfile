@@ -11,7 +11,7 @@ module.exports = {
   async onEnd({ error, utils }) {
     // Reports are public deploy metadata. Emit fixed labels only, never raw
     // errors, environment values, paths, or build output containing secrets.
-    const message = String(error?.message || "");
+    const message = `${error?.message || ""}\n${error?.stack || ""}\n${error?.cause?.message || ""}`;
     const categories = [
       ["secret-scan", /secret.{0,30}(scan|found|detect)/i],
       ["memory-limit", /out of memory|heap limit|SIGKILL/i],
@@ -19,8 +19,17 @@ module.exports = {
       ["edge-validation", /edge.{0,30}(valid|bundl|size)/i],
       ["function-size", /(function|bundle).{0,30}(large|limit|size)/i],
       ["build-command", /command failed|non.zero|exit code/i],
+      ["missing-file", /ENOENT|no such file or directory/i],
+      ["permission", /EACCES|EPERM|permission denied|forbidden/i],
+      ["native-addon", /C\+\+ Addon|\.node\b/],
+      ["cache", /cache|ENOENT.{0,100}\.next/i],
+      ["forms", /Netlify Forms|forms.*integration/i],
+      ["network", /fetch failed|ECONNRESET|ENOTFOUND|ETIMEDOUT/i],
+      ["invalid-manifest", /manifest|JSON|Unexpected token/i],
+      ["invalid-path", /path.*(?:absolute|relative|string)|ERR_INVALID_ARG_TYPE/i],
     ];
-    const category = error ? categories.find(([, pattern]) => pattern.test(message))?.[0] || "unclassified" : "none";
+    const matches = categories.filter(([, pattern]) => pattern.test(message)).map(([name]) => name);
+    const category = error ? matches.join(",") || "unclassified" : "none";
     let detail = "";
     try {
       const report = JSON.parse(await readFile(".netlify/build-diagnostics.json", "utf8"));
