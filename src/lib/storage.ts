@@ -1,18 +1,15 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 const endpoint = process.env.S3_ENDPOINT || "http://localhost:9000";
 const region = process.env.S3_REGION || "us-east-1";
-const accessKeyId = process.env.S3_ACCESS_KEY_ID || "minioadmin";
-const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY || "minioadmin";
+const accessKeyId = process.env.S3_ACCESS_KEY_ID;
+const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY;
 export const S3_BUCKET = process.env.S3_BUCKET || "compro-uploads";
 
 export const s3Client = new S3Client({
   endpoint,
   region,
-  credentials: {
-    accessKeyId,
-    secretAccessKey,
-  },
+  credentials: accessKeyId && secretAccessKey ? { accessKeyId, secretAccessKey } : undefined,
   forcePathStyle: true, // Required for MinIO & local S3-compatible storage
 });
 

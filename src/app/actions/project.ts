@@ -77,6 +77,8 @@ export async function createProjectAction(
     },
   });
 
+  revalidatePath("/portofolio", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/portfolio");
   return { success: true, message: "Proyek berhasil ditambahkan", redirectUrl: "/admin/portfolio" };
 }
@@ -174,6 +176,8 @@ export async function updateProjectAction(
     },
   });
 
+  revalidatePath("/portofolio", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/portfolio");
   return { success: true, message: "Proyek berhasil diperbarui", redirectUrl: "/admin/portfolio" };
 }
@@ -201,6 +205,8 @@ export async function deleteProjectAction(id: string): Promise<ActionState> {
     },
   });
 
+  revalidatePath("/portofolio", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/portfolio");
   return { success: true, message: "Proyek berhasil dihapus" };
 }

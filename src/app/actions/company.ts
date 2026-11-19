@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { companyProfileSchema } from "@/lib/validations/crud";
@@ -73,5 +74,6 @@ export async function updateCompanyProfileAction(
     },
   });
 
+  revalidatePath("/", "layout");
   return { success: true, message: "Profil perusahaan berhasil diperbarui" };
 }

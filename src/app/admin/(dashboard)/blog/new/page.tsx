@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { PostForm } from "../PostForm";
@@ -7,6 +8,7 @@ export const metadata = {
 };
 
 export default async function NewPostPage() {
+  await requireAuth();
   const categoriesRaw = await prisma.postCategory.findMany({
     include: {
       translations: { where: { locale: "id" } },

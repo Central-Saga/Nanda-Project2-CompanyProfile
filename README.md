@@ -193,7 +193,7 @@ compro/
 
 ### Prerequisites
 
-- **Node.js** 18+ (disarankan v22 LTS)
+- **Node.js** 22.23.4 (sesuai `.nvmrc`, CI, dan Netlify)
 - **PostgreSQL** database (atau [Neon](https://neon.tech) serverless)
 - **npm** atau **yarn**
 
@@ -209,11 +209,11 @@ npm install
 
 # Setup environment variables
 cp .env.example .env
-# Edit .env — isi DATABASE_URL, JWT_SECRET, S3 credentials
+# Edit .env — isi DATABASE_URL, AUTH_SECRET, S3 credentials
 
-# Generate Prisma client & push schema
+# Generate Prisma client & apply migrations
 npx prisma generate
-npx prisma db push
+npx prisma migrate deploy
 
 # Seed database (data awal)
 npx tsx prisma/seed.ts
@@ -229,11 +229,17 @@ Buka [http://localhost:3000](http://localhost:3000) untuk melihat website.
 | Variable | Deskripsi |
 |---|---|
 | `DATABASE_URL` | Connection string PostgreSQL |
-| `JWT_SECRET` | Secret key untuk JWT session token |
-| `AWS_ACCESS_KEY_ID` | S3-compatible storage access key |
-| `AWS_SECRET_ACCESS_KEY` | S3-compatible storage secret key |
-| `AWS_REGION` | S3 region |
-| `S3_BUCKET_NAME` | Nama bucket S3 |
+| `AUTH_SECRET` | Wajib minimal 32 karakter acak; buat dengan `openssl rand -base64 48` |
+| `S3_ACCESS_KEY_ID` | S3-compatible storage access key; kosong jika memakai IAM role |
+| `S3_SECRET_ACCESS_KEY` | Pasangan secret access key |
+| `S3_REGION` | S3 region (default `us-east-1`) |
+| `S3_BUCKET` | Nama bucket S3 (default `compro-uploads`) |
+| `S3_ENDPOINT` | URL endpoint S3-compatible (default lokal `http://localhost:9000`) |
+| `S3_PUBLIC_URL` | Opsional, URL origin baca media publik |
+| `ADMIN_EMAIL` | Wajib saat seed; tidak ada akun default |
+| `ADMIN_INITIAL_PASSWORD` | Wajib saat seed, minimal 12 karakter; wajib ganti setelah login |
+| `NEXT_PUBLIC_SITE_URL` | URL origin website untuk konfigurasi deployment |
+| `NODE_ENV` | Diatur otomatis oleh Next.js untuk development/production; jangan salin antar lingkungan |
 
 ### Build & Deploy
 
@@ -302,3 +308,33 @@ Proyek ini dikembangkan sebagai bagian dari portfolio SMK oleh **I Putu Nanda Pu
 <p align="center">
   <sub>Built with Next.js 16 • React 19 • TypeScript • Tailwind CSS 4 • Prisma 7 • PostgreSQL</sub>
 </p>
+
+## Quality checks dan operasional
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+Workflow `.github/workflows/ci.yml` menjalankan keempat pemeriksaan untuk push
+main/develop dan pull request. Node dipin pada `.nvmrc`, `package.json`, dan
+`netlify.toml`. Build memerlukan akses Google Fonts. Jika Turbopack tidak dapat
+membuat proses/port pada sandbox lokal, `npx next build --webpack` dapat dipakai
+untuk memverifikasi kompilasi, tetapi tidak membuktikan build Turbopack berhasil.
+
+Pisahkan database, AUTH_SECRET, dan storage development/staging/production.
+Isi variabel produksi di dashboard Netlify, bukan di file repository. Variabel
+NEXT_PUBLIC_* dibundel saat build dan tidak boleh memuat secret. Salin daftar
+variabel dari `.env.example`; jangan salin nilai produksi ke CI. Kredensial seed
+hanya diperlukan saat inisialisasi database. Mengubah AUTH_SECRET membatalkan
+JWT lama. Penggantian password kini mencabut seluruh sesi dan meminta login ulang.
+
+Media mengizinkan JPEG, PNG, WEBP, dan PDF maksimal 10MB. SVG tidak diterima
+karena dapat mengeksekusi konten aktif. Pemeriksaan signature bukan pemindai
+malware; storage harus memakai origin terpisah dari aplikasi, membatasi write
+pada kredensial server, dan menyajikan dokumen tidak tepercaya sebagai attachment.
+
+Lihat [arsitektur dan ADR](docs/ARCHITECTURE.md), [kontribusi](CONTRIBUTING.md),
+[changelog](CHANGELOG.md), dan [status issue audit](docs/ISSUE-STATUS.md).

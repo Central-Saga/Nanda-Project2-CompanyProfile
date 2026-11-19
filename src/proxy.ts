@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
-
-const SECRET_KEY = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "default_auth_secret_minimum_32_characters_long_12345"
-);
+import { verifySessionToken } from "@/lib/session";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -21,9 +17,8 @@ export async function proxy(request: NextRequest) {
     }
 
     try {
-      const { payload } = await jwtVerify(token, SECRET_KEY, {
-        algorithms: ["HS256"],
-      });
+      const payload = await verifySessionToken(token);
+      if (!payload) throw new Error("Invalid session");
 
       const mustChange = Boolean(payload.mustChangePassword);
 
@@ -31,12 +26,6 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/admin/change-password", request.url));
       }
 
-      if (isLoginPage) {
-        if (mustChange) {
-          return NextResponse.redirect(new URL("/admin/change-password", request.url));
-        }
-        return NextResponse.redirect(new URL("/admin/dashboard", request.url));
-      }
 
       return NextResponse.next();
     } catch {

@@ -63,6 +63,8 @@ export async function createServiceAction(
     },
   });
 
+  revalidatePath("/layanan", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/services");
   return { success: true, message: "Layanan berhasil ditambahkan", redirectUrl: "/admin/services" };
 }
@@ -144,6 +146,8 @@ export async function updateServiceAction(
     },
   });
 
+  revalidatePath("/layanan", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/services");
   return { success: true, message: "Layanan berhasil diperbarui", redirectUrl: "/admin/services" };
 }
@@ -172,6 +176,8 @@ export async function deleteServiceAction(id: string): Promise<ActionState> {
     },
   });
 
+  revalidatePath("/layanan", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/services");
   return { success: true, message: "Layanan berhasil dihapus" };
 }

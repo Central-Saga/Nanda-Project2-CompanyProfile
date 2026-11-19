@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { CompanyProfileForm } from "./CompanyProfileForm";
@@ -7,6 +8,7 @@ export const metadata = {
 };
 
 export default async function ProfilePage() {
+  await requireAuth();
   const profile = await prisma.companyProfile.findFirst();
 
   const formattedData = {

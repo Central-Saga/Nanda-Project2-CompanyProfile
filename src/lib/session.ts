@@ -1,9 +1,13 @@
 import { SignJWT, jwtVerify } from "jose";
 import crypto from "crypto";
 
-const SECRET_KEY = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "default_auth_secret_minimum_32_characters_long_12345"
-);
+export function getSessionSecret(): Uint8Array {
+  const secret = process.env.AUTH_SECRET;
+  if (!secret || secret.length < 32) {
+    throw new Error("AUTH_SECRET wajib diisi dengan minimal 32 karakter acak.");
+  }
+  return new TextEncoder().encode(secret);
+}
 
 export interface SessionPayload {
   userId: string;
@@ -21,15 +25,27 @@ export async function createSessionToken(payload: SessionPayload): Promise<strin
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("24h")
-    .sign(SECRET_KEY);
+    .sign(getSessionSecret());
 }
 
 export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, SECRET_KEY, {
+    const { payload } = await jwtVerify(token, getSessionSecret(), {
       algorithms: ["HS256"],
     });
-    return payload as unknown as SessionPayload;
+    if (typeof payload.userId !== "string" || !payload.userId ||
+        typeof payload.sessionId !== "string" || !payload.sessionId ||
+        typeof payload.role !== "string" ||
+        typeof payload.exp !== "number" ||
+        (payload.mustChangePassword !== undefined && typeof payload.mustChangePassword !== "boolean")) {
+      return null;
+    }
+    return {
+      userId: payload.userId,
+      sessionId: payload.sessionId,
+      role: payload.role,
+      mustChangePassword: payload.mustChangePassword,
+    };
   } catch {
     return null;
   }

@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { JobForm } from "../../JobForm";
@@ -12,6 +13,7 @@ interface EditJobPageProps {
 }
 
 export default async function EditJobPage({ params }: EditJobPageProps) {
+  await requireAuth();
   const { id } = await params;
 
   const job = await prisma.jobOpening.findUnique({

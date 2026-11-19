@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md p-8 bg-zinc-950 border border-zinc-800 rounded-lg">
         <div className="mb-6">
           <div className="inline-block px-2 py-0.5 text-xs font-mono bg-red-950 text-red-400 border border-red-800/60 rounded mb-2">
@@ -20,6 +20,6 @@ export default function LoginPage() {
 
         <LoginForm />
       </div>
-    </div>
+    </main>
   );
 }

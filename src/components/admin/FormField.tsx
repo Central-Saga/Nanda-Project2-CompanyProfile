@@ -1,4 +1,4 @@
-interface FormFieldProps {
+export interface FormFieldProps {
   label: string;
   name: string;
   type?: string;
@@ -35,9 +35,11 @@ export function FormField({
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
-      {hint && <p className="text-[11px] text-zinc-500 mb-1">{hint}</p>}
+      {hint && <p id={`${name}-hint`} className="text-[11px] text-zinc-500 mb-1">{hint}</p>}
       {multiline ? (
         <textarea
+          aria-invalid={!!errors?.length}
+          aria-describedby={[hint && `${name}-hint`, errors?.length && `${name}-errors`].filter(Boolean).join(" ") || undefined}
           id={name}
           name={name}
           required={required}
@@ -48,6 +50,8 @@ export function FormField({
         />
       ) : (
         <input
+          aria-invalid={!!errors?.length}
+          aria-describedby={[hint && `${name}-hint`, errors?.length && `${name}-errors`].filter(Boolean).join(" ") || undefined}
           id={name}
           name={name}
           type={type}
@@ -57,11 +61,9 @@ export function FormField({
           className={inputClass}
         />
       )}
-      {errors?.map((err, i) => (
-        <p key={i} className="mt-1 text-xs text-red-400">
-          {err}
-        </p>
-      ))}
+      {!!errors?.length && <div id={`${name}-errors`} role="alert">
+        {errors.map((err, i) => <p key={i} className="mt-1 text-xs text-red-400">{err}</p>)}
+      </div>}
     </div>
   );
 }

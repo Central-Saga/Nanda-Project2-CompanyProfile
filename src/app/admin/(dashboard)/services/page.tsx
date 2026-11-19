@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { EmptyState } from "@/components/admin/EmptyState";
@@ -9,6 +10,7 @@ export const metadata = {
 };
 
 export default async function ServicesPage() {
+  await requireAuth();
   const services = await prisma.service.findMany({
     where: { deletedAt: null },
     include: {

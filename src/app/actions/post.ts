@@ -63,6 +63,8 @@ export async function createPostAction(
     },
   });
 
+  revalidatePath("/blog", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/blog");
   return { success: true, message: "Artikel berhasil dibuat", redirectUrl: "/admin/blog" };
 }
@@ -144,6 +146,8 @@ export async function updatePostAction(
     },
   });
 
+  revalidatePath("/blog", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/blog");
   return { success: true, message: "Artikel berhasil diperbarui", redirectUrl: "/admin/blog" };
 }
@@ -171,6 +175,8 @@ export async function deletePostAction(id: string): Promise<ActionState> {
     },
   });
 
+  revalidatePath("/blog", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/blog");
   return { success: true, message: "Artikel berhasil dihapus" };
 }

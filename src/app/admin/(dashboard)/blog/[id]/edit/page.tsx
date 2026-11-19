@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { PostForm } from "../../PostForm";
@@ -12,6 +13,7 @@ interface EditPostPageProps {
 }
 
 export default async function EditPostPage({ params }: EditPostPageProps) {
+  await requireAuth();
   const { id } = await params;
 
   const [post, categoriesRaw] = await Promise.all([

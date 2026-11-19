@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import { cache } from "react";
 import { cookies } from "next/headers";
-import { verifySessionToken, hashToken, SessionPayload } from "./session";
+import { verifySessionToken, hashToken } from "./session";
 
 export interface AuthenticatedUser {
   id: string;
@@ -11,7 +13,7 @@ export interface AuthenticatedUser {
   sessionId: string;
 }
 
-export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
+export const getCurrentUser = cache(async (): Promise<AuthenticatedUser | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get("session_token")?.value;
   if (!token) return null;
@@ -33,6 +35,7 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
 
   if (!session) return null;
   if (session.revokedAt || session.expiresAt < new Date()) return null;
+  if (session.userId !== payload.userId) return null;
   if (session.tokenHash !== hashed) return null;
   if (!session.user || !session.user.isActive || session.user.deletedAt) return null;
 
@@ -44,12 +47,13 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
     mustChangePassword: session.user.mustChangePassword,
     sessionId: session.id,
   };
-}
+});
 
 export async function requireAuth(): Promise<AuthenticatedUser> {
   const user = await getCurrentUser();
   if (!user) {
-    throw new Error("UNAUTHORIZED");
+    redirect("/admin/login");
   }
+  if (user.mustChangePassword) redirect("/admin/change-password");
   return user;
 }

@@ -1,8 +1,10 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import Link from "next/link";
 
 export default async function DashboardPage() {
+  await requireAuth();
   const [
     servicesCount,
     projectsCount,
@@ -42,8 +44,8 @@ export default async function DashboardPage() {
     { label: "Total Inbound Leads", value: leadsCount, href: "/admin/leads", alert: leadsCount > 0 },
     { label: "Jadwal Konsultasi", value: bookingsCount, href: "/admin/bookings", alert: bookingsCount > 0 },
     { label: "Layanan Aktif", value: servicesCount, href: "/admin/services" },
-    { label: "Portofolio & Studi Kasus", value: projectsCount, href: "/admin/projects" },
-    { label: "Artikel / Publikasi", value: postsCount, href: "/admin/posts" },
+    { label: "Portofolio & Studi Kasus", value: projectsCount, href: "/admin/portfolio" },
+    { label: "Artikel / Publikasi", value: postsCount, href: "/admin/blog" },
     { label: "Lowongan Kerja", value: jobsCount, href: "/admin/careers" },
     { label: "Aset Media S3", value: mediaCount, href: "/admin/media" },
   ];

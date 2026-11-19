@@ -16,7 +16,7 @@ export type FormActionResult = {
 
 // 1. Submit Contact Form (/kontak)
 export async function submitContactAction(
-  prevState: any,
+  _prevState: FormActionResult | null,
   formData: FormData
 ): Promise<FormActionResult> {
   const rawData = {
@@ -83,8 +83,8 @@ export async function submitContactAction(
       success: true,
       message: "Terima kasih! Pesan dan permohonan informasi Anda telah kami terima di database.",
     };
-  } catch (error) {
-    console.error("submitContactAction error:", error);
+  } catch {
+    console.error("submitContactAction failed");
     return {
       success: false,
       message: "Gagal menyimpan pesan. Silakan coba kembali sesaat lagi.",
@@ -94,7 +94,7 @@ export async function submitContactAction(
 
 // 2. Submit Project Brief (/mulai-proyek)
 export async function submitBriefAction(
-  prevState: any,
+  _prevState: FormActionResult | null,
   formData: FormData
 ): Promise<FormActionResult> {
   const rawData = {
@@ -176,8 +176,8 @@ export async function submitBriefAction(
       success: true,
       message: "Brief spesifikasi kebutuhan Anda telah tersimpan langsung di database kami.",
     };
-  } catch (error) {
-    console.error("submitBriefAction error:", error);
+  } catch {
+    console.error("submitBriefAction failed");
     return {
       success: false,
       message: "Gagal menyimpan brief proyek. Silakan coba kembali.",
@@ -187,7 +187,7 @@ export async function submitBriefAction(
 
 // 3. Submit Consultation Booking (/booking)
 export async function submitBookingAction(
-  prevState: any,
+  _prevState: FormActionResult | null,
   formData: FormData
 ): Promise<FormActionResult> {
   const rawData = {
@@ -262,8 +262,8 @@ export async function submitBookingAction(
       success: true,
       message: "Jadwal konsultasi teknis berhasil didaftarkan ke sistem.",
     };
-  } catch (error) {
-    console.error("submitBookingAction error:", error);
+  } catch {
+    console.error("submitBookingAction failed");
     return {
       success: false,
       message: "Gagal mendaftarkan jadwal konsultasi. Silakan periksa kembali.",
