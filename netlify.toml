@@ -1,5 +1,5 @@
 [build]
-  command = "npx prisma generate && npm run build -- --webpack"
+  command = "node scripts/netlify-build.mjs"
   publish = ".next"
 
 [build.environment]
