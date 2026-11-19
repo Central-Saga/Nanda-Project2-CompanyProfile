@@ -2,7 +2,7 @@
 
 Repository kanonis: `Central-Saga/Nanda-Project2-CompanyProfile` (remote lama mengalami redirect).
 
-Snapshot awal: **177 issue terbuka**. Banyak issue agregat mencakup temuan individual yang sama.
+Snapshot awal: **177 issue terbuka**. Setelah merge [PR #341](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/pull/341), **23 issue ditutup dengan komentar bukti; 154 issue awal masih terbuka**. Banyak issue agregat mencakup temuan individual yang sama.
 
 Pemilik workspace memilih **mempertahankan Next.js + Prisma**. Persyaratan Laravel belum dipenuhi. Issue agregat hanya boleh ditutup ketika semua subtemuannya terbukti selesai.
 
@@ -19,10 +19,10 @@ Status di bawah adalah hasil penelaahan awal, bukan klaim seluruh audit selesai.
 | [#31](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/31) | [Audit 496][P0] Validasi isi file (backend 11.8) | Perlu rekonsiliasi standar Laravel / bukti audit khusus |
 | [#37](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/37) | [Audit 496][P0] CI hijau di HEAD (backend 15.3) | Perlu rekonsiliasi standar Laravel / bukti audit khusus |
 | [#38](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/38) | [Audit 496][P0] Compose sekali jalan semua healthy (backend 15.6) | Perlu rekonsiliasi standar Laravel / bukti audit khusus |
-| [#40](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/40) | [Audit 496][P0] Guard auth di server (frontend 3.6) | Siap bukti |
+| [#40](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/40) | [Audit 496][P0] Guard auth di server (frontend 3.6) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/40#issuecomment-6998206079) |
 | [#41](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/41) | [Audit 496][P0] State direset saat logout (frontend 5.9) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
 | [#42](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/42) | [Audit 496][P0] 0 open redirect (frontend 10.9) | Terbuka; belum diperbaiki/diverifikasi |
-| [#43](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/43) | [Audit 496][P0] Test runner jalan (frontend 15.1) | Siap bukti |
+| [#43](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/43) | [Audit 496][P0] Test runner jalan (frontend 15.1) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/43#issuecomment-6998207173) |
 | [#62](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/62) | [Audit 496][P1] Bootstrap & repo — 3 temuan (frontend tahap 0) | Terbuka; belum diperbaiki/diverifikasi |
 | [#63](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/63) | [Audit 496][P1] TypeScript & tipe — 4 temuan (frontend tahap 1) | Terbuka; belum diperbaiki/diverifikasi |
 | [#64](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/64) | [Audit 496][P1] Arsitektur & modul — 2 temuan (frontend tahap 2) | Terbuka; belum diperbaiki/diverifikasi |
@@ -61,16 +61,16 @@ Status di bawah adalah hasil penelaahan awal, bukan klaim seluruh audit selesai.
 | [#179](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/179) | [Audit 496][P1] Throttle login + lockout (backend 10.10) | Terbuka; belum diperbaiki/diverifikasi |
 | [#180](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/180) | [Audit 496][P1] Nama file di-random (backend 11.7) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
 | [#183](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/183) | [Audit 496][P1] Header keamanan (backend 11.12) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
-| [#215](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/215) | [Audit 496][P1] Versi Node di-pin (frontend 0.2) | Siap bukti |
-| [#216](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/216) | [Audit 496][P1] ESLint aktif & 0 error (frontend 0.6) | Siap bukti |
-| [#217](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/217) | [Audit 496][P1] Env terdokumentasi (frontend 0.9) | Siap bukti |
-| [#218](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/218) | [Audit 496][P1] 0 `any` eksplisit (frontend 1.1) | Siap bukti |
+| [#215](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/215) | [Audit 496][P1] Versi Node di-pin (frontend 0.2) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/215#issuecomment-6998208092) |
+| [#216](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/216) | [Audit 496][P1] ESLint aktif & 0 error (frontend 0.6) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/216#issuecomment-6998209068) |
+| [#217](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/217) | [Audit 496][P1] Env terdokumentasi (frontend 0.9) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/217#issuecomment-6998209971) |
+| [#218](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/218) | [Audit 496][P1] 0 `any` eksplisit (frontend 1.1) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/218#issuecomment-6998210814) |
 | [#219](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/219) | [Audit 496][P1] Tidak ada duplikasi tipe backend (frontend 1.6) | Terbuka; belum diperbaiki/diverifikasi |
 | [#220](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/220) | [Audit 496][P1] Codegen kontrak dicek di CI (frontend 1.13) | Terbuka; belum diperbaiki/diverifikasi |
 | [#221](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/221) | [Audit 496][P1] Tidak ada `as` untuk memaksa respons (frontend 1.14) | Terbuka; belum diperbaiki/diverifikasi |
 | [#222](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/222) | [Audit 496][P1] shared/ui` presentational (frontend 2.4) | Terbuka; belum diperbaiki/diverifikasi |
 | [#223](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/223) | [Audit 496][P1] 0 circular import (frontend 2.6) | Terbuka; belum diperbaiki/diverifikasi |
-| [#224](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/224) | [Audit 496][P1] Error boundary per route group (frontend 3.3) | Siap bukti |
+| [#224](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/224) | [Audit 496][P1] Error boundary per route group (frontend 3.3) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/224#issuecomment-6998211703) |
 | [#225](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/225) | [Audit 496][P1] Deep link refresh tidak 404 (frontend 3.13) | Terbuka; belum diperbaiki/diverifikasi |
 | [#226](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/226) | [Audit 496][P1] Satu API client terpusat (frontend 4.1) | Terbuka; belum diperbaiki/diverifikasi |
 | [#227](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/227) | [Audit 496][P1] Base URL dari env (frontend 4.2) | Terbuka; belum diperbaiki/diverifikasi |
@@ -89,18 +89,18 @@ Status di bawah adalah hasil penelaahan awal, bukan klaim seluruh audit selesai.
 | [#240](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/240) | [Audit 496][P1] CSP terpasang tanpa `unsafe-inline (frontend 10.4) | Terbuka; belum diperbaiki/diverifikasi |
 | [#241](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/241) | [Audit 496][P1] CSRF untuk cookie auth (frontend 10.10) | Terbuka; belum diperbaiki/diverifikasi |
 | [#242](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/242) | [Audit 496][P1] HSTS + cookie flags (frontend 10.12) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
-| [#243](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/243) | [Audit 496][P1] 0 data sensitif di console (frontend 10.13) | Siap bukti |
+| [#243](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/243) | [Audit 496][P1] 0 data sensitif di console (frontend 10.13) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/243#issuecomment-6998212700) |
 | [#244](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/244) | [Audit 496][P1] Error boundary tidak bocorkan stack (frontend 10.18) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
-| [#245](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/245) | [Audit 496][P1] Error boundary per route (frontend 11.1) | Siap bukti |
+| [#245](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/245) | [Audit 496][P1] Error boundary per route (frontend 11.1) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/245#issuecomment-6998213597) |
 | [#246](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/246) | [Audit 496][P1] Fallback UI ramah (frontend 11.2) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
 | [#247](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/247) | [Audit 496][P1] API down → degradasi jelas (frontend 11.6) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
 | [#248](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/248) | [Audit 496][P1] 0 white screen saat 500 (frontend 11.8) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
 | [#249](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/249) | [Audit 496][P1] E2E alur kritis (frontend 15.5) | Terbuka; belum diperbaiki/diverifikasi |
 | [#250](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/250) | [Audit 496][P1] API dimock (MSW) (frontend 15.7) | Terbuka; belum diperbaiki/diverifikasi |
 | [#251](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/251) | [Audit 496][P1] Coverage (frontend 15.11) | Terbuka; belum diperbaiki/diverifikasi |
-| [#252](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/252) | [Audit 496][P1] Pipeline: lint+tsc+test+build (frontend 16.1) | Siap bukti |
+| [#252](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/252) | [Audit 496][P1] Pipeline: lint+tsc+test+build (frontend 16.1) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/252#issuecomment-6998214503) |
 | [#253](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/253) | [Audit 496][P1] Env per environment (frontend 16.4) | Terbuka; belum diperbaiki/diverifikasi |
-| [#254](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/254) | [Audit 496][P1] Env terdokumentasi lengkap (frontend 17.2) | Siap bukti |
+| [#254](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/254) | [Audit 496][P1] Env terdokumentasi lengkap (frontend 17.2) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/254#issuecomment-6998215395) |
 | [#255](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/255) | [Standar Stack][P0] Backend wajib Laravel API — sekarang full-stack Next.js + Prisma, skor BE 0 | Perlu rekonsiliasi standar Laravel / bukti audit khusus |
 | [#256](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/256) | [Audit 496] Rekonsiliasi: issue N/A vs temuan nyata | Perlu rekonsiliasi standar Laravel / bukti audit khusus |
 | [#257](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/257) | [Audit 496][P0] Backend bukan Laravel API (artisan tidak ditemukan) (backend 0.1) | Perlu rekonsiliasi standar Laravel / bukti audit khusus |
@@ -114,8 +114,8 @@ Status di bawah adalah hasil penelaahan awal, bukan klaim seluruh audit selesai.
 | [#265](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/265) | [Audit 496][P2] 0 komponen >200 baris (frontend 2.8) | Terbuka; belum diperbaiki/diverifikasi |
 | [#266](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/266) | [Audit 496][P2] Duplikasi kode (frontend 2.13) | Terbuka; belum diperbaiki/diverifikasi |
 | [#267](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/267) | [Audit 496][P2] 0 deep import ke internal lib (frontend 2.14) | Terbuka; belum diperbaiki/diverifikasi |
-| [#268](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/268) | [Audit 496][P2] 404/not-found per segmen (frontend 3.2) | Siap bukti |
-| [#269](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/269) | [Audit 496][P2] Loading/Suspense boundary (frontend 3.4) | Siap bukti |
+| [#268](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/268) | [Audit 496][P2] 404/not-found per segmen (frontend 3.2) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/268#issuecomment-6998216459) |
+| [#269](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/269) | [Audit 496][P2] Loading/Suspense boundary (frontend 3.4) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/269#issuecomment-6998217331) |
 | [#270](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/270) | [Audit 496][P2] Retry + backoff untuk GET (frontend 4.5) | Terbuka; belum diperbaiki/diverifikasi |
 | [#271](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/271) | [Audit 496][P2] Request dibatalkan saat unmount (frontend 4.7) | Terbuka; belum diperbaiki/diverifikasi |
 | [#272](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/272) | [Audit 496][P2] Request dedupe (frontend 4.9) | Terbuka; belum diperbaiki/diverifikasi |
@@ -133,14 +133,14 @@ Status di bawah adalah hasil penelaahan awal, bukan klaim seluruh audit selesai.
 | [#284](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/284) | [Audit 496][P2] Touch target ≥44px (frontend 7.10) | Terbuka; belum diperbaiki/diverifikasi |
 | [#285](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/285) | [Audit 496][P2] 0 info hanya lewat warna (frontend 8.11) | Terbuka; belum diperbaiki/diverifikasi |
 | [#286](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/286) | [Audit 496][P2] Tabel punya caption/scope (frontend 8.12) | Terbuka; belum diperbaiki/diverifikasi |
-| [#287](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/287) | [Audit 496][P2] Reduced motion dihormati (frontend 8.15) | Siap bukti |
+| [#287](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/287) | [Audit 496][P2] Reduced motion dihormati (frontend 8.15) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/287#issuecomment-6998218229) |
 | [#288](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/288) | [Audit 496][P2] Screen reader smoke test (frontend 8.17) | Terbuka; belum diperbaiki/diverifikasi |
 | [#289](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/289) | [Audit 496][P2] Code splitting per route (frontend 9.7) | Terbuka; belum diperbaiki/diverifikasi |
 | [#290](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/290) | [Audit 496][P2] Dynamic import komponen berat (frontend 9.8) | Terbuka; belum diperbaiki/diverifikasi |
 | [#291](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/291) | [Audit 496][P2] Kompresi aktif (frontend 9.13) | Terbuka; belum diperbaiki/diverifikasi |
 | [#292](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/292) | [Audit 496][P2] Bundle budget di CI (frontend 9.18) | Terbuka; belum diperbaiki/diverifikasi |
 | [#293](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/293) | [Audit 496][P2] Link eksternal `noopener noreferrer (frontend 10.8) | Terbuka; belum diperbaiki/diverifikasi |
-| [#294](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/294) | [Audit 496][P2] Frame protection (frontend 10.11) | Siap bukti |
+| [#294](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/294) | [Audit 496][P2] Frame protection (frontend 10.11) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/294#issuecomment-6998219140) |
 | [#295](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/295) | [Audit 496][P2] Error dilaporkan ke monitoring (frontend 11.3) | Terbuka; belum diperbaiki/diverifikasi |
 | [#296](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/296) | [Audit 496][P2] Retry manual tersedia (frontend 11.4) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
 | [#297](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/297) | [Audit 496][P2] Offline banner (frontend 11.5) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
@@ -155,22 +155,22 @@ Status di bawah adalah hasil penelaahan awal, bukan klaim seluruh audit selesai.
 | [#306](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/306) | [Audit 496][P2] Pesan error API diterjemahkan (frontend 13.8) | Terbuka; belum diperbaiki/diverifikasi |
 | [#307](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/307) | [Audit 496][P2] sitemap.xml (frontend 14.4) | Terbuka; belum diperbaiki/diverifikasi |
 | [#308](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/308) | [Audit 496][P2] robots.txt benar (frontend 14.5) | Terbuka; belum diperbaiki/diverifikasi |
-| [#309](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/309) | [Audit 496][P2] Unit test utils/hooks (frontend 15.2) | Siap bukti |
+| [#309](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/309) | [Audit 496][P2] Unit test utils/hooks (frontend 15.2) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/309#issuecomment-6998220128) |
 | [#310](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/310) | [Audit 496][P2] Component test (frontend 15.3) | Implementasi parsial; perlu uji runtime/browser atau cakupan tambahan |
 | [#311](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/311) | [Audit 496][P2] Mobile viewport test (frontend 15.14) | Terbuka; belum diperbaiki/diverifikasi |
-| [#312](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/312) | [Audit 496][P2] Form validation diuji (frontend 15.16) | Siap bukti |
+| [#312](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/312) | [Audit 496][P2] Form validation diuji (frontend 15.16) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/312#issuecomment-6998221223) |
 | [#313](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/313) | [Audit 496][P2] Preview deploy per PR (frontend 16.5) | Terbuka; belum diperbaiki/diverifikasi |
 | [#314](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/314) | [Audit 496][P2] Bundle budget gate (frontend 16.6) | Terbuka; belum diperbaiki/diverifikasi |
 | [#315](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/315) | [Audit 496][P2] Artifact immutable (frontend 16.9) | Terbuka; belum diperbaiki/diverifikasi |
 | [#316](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/316) | [Audit 496][P2] Rollback cepat (frontend 16.10) | Terbuka; belum diperbaiki/diverifikasi |
-| [#317](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/317) | [Audit 496][P2] Node versi CI = prod (frontend 16.12) | Siap bukti |
+| [#317](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/317) | [Audit 496][P2] Node versi CI = prod (frontend 16.12) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/317#issuecomment-6998222105) |
 | [#318](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/318) | [Audit 496][P2] Dockerfile multi-stage non-root (frontend 16.13) | Terbuka; belum diperbaiki/diverifikasi |
 | [#319](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/319) | [Audit 496][P3] 0 dependency/file mati (frontend 0.12) | Terbuka; belum diperbaiki/diverifikasi |
 | [#320](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/320) | [Audit 496][P3] Stale time diset sadar (frontend 4.14) | Terbuka; belum diperbaiki/diverifikasi |
 | [#321](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/321) | [Audit 496][P3] Form reset setelah sukses (frontend 6.12) | Terbuka; belum diperbaiki/diverifikasi |
 | [#322](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/322) | [Audit 496][P3] Dark mode konsisten (frontend 7.4) | Terbuka; belum diperbaiki/diverifikasi |
 | [#323](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/323) | [Audit 496][P3] Print/export berfungsi (frontend 7.14) | Terbuka; belum diperbaiki/diverifikasi |
-| [#324](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/324) | [Audit 496][P3] Skip link ada (frontend 8.14) | Siap bukti |
+| [#324](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/324) | [Audit 496][P3] Skip link ada (frontend 8.14) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/324#issuecomment-6998223075) |
 | [#325](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/325) | [Audit 496][P3] 0 `alert`/`confirm` native (frontend 11.11) | Terbuka; belum diperbaiki/diverifikasi |
 | [#326](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/326) | [Audit 496][P3] Request id dikorelasikan (frontend 12.3) | Terbuka; belum diperbaiki/diverifikasi |
 | [#327](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/327) | [Audit 496][P3] Feature flag terdokumentasi (frontend 12.5) | Terbuka; belum diperbaiki/diverifikasi |
@@ -183,10 +183,10 @@ Status di bawah adalah hasil penelaahan awal, bukan klaim seluruh audit selesai.
 | [#334](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/334) | [Audit 496][P3] Visual regression (frontend 15.13) | Terbuka; belum diperbaiki/diverifikasi |
 | [#335](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/335) | [Audit 496][P3] Factory data test (frontend 15.17) | Terbuka; belum diperbaiki/diverifikasi |
 | [#336](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/336) | [Audit 496][P3] Lighthouse CI gate (frontend 16.7) | Terbuka; belum diperbaiki/diverifikasi |
-| [#337](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/337) | [Audit 496][P3] Cache build CI (frontend 16.11) | Siap bukti |
-| [#338](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/338) | [Audit 496][P3] Arsitektur & ADR (frontend 17.4) | Siap bukti |
-| [#339](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/339) | [Audit 496][P3] Changelog (frontend 17.5) | Siap bukti |
-| [#340](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/340) | [Audit 496][P3] Kontribusi & convention (frontend 17.6) | Siap bukti |
+| [#337](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/337) | [Audit 496][P3] Cache build CI (frontend 16.11) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/337#issuecomment-6998223891) |
+| [#338](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/338) | [Audit 496][P3] Arsitektur & ADR (frontend 17.4) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/338#issuecomment-6998224742) |
+| [#339](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/339) | [Audit 496][P3] Changelog (frontend 17.5) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/339#issuecomment-6998225712) |
+| [#340](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/340) | [Audit 496][P3] Kontribusi & convention (frontend 17.6) | Selesai — [bukti](https://github.com/Central-Saga/Nanda-Project2-CompanyProfile/issues/340#issuecomment-6998226585) |
 
 ## Bukti lokal
 
@@ -206,4 +206,6 @@ Status di bawah adalah hasil penelaahan awal, bukan klaim seluruh audit selesai.
 - Tes markup bukan Testing Library atau E2E browser; issue #310 tetap terbuka.
 - Revokasi lintas perangkat, logout ke akun lain, offline, retry, mutasi ke daftar, dan cookie flags perlu pengujian browser/database tersendiri.
 - CSP, CSRF probe, Redis, scanning riwayat secret, performa, coverage target, i18n, SEO dinamis, dan monitoring belum dibuktikan.
-- Status CI remote harus dibaca setelah commit diterbitkan; konfigurasi workflow saja tidak membuktikan hijau.
+- CI PR #341 pada commit `7d1409e`: quality success, termasuk lint, TypeScript, 16 tes, dan build Turbopack default. Netlify melaporkan preview deploy success; HTTP preview dibatasi autentikasi platform (401), jadi tidak dipakai sebagai bukti perilaku aplikasi.
+
+PR #341 di-merge sebagai `47e5ce56794853848bc97d2c870f0971dc92f65b`. Issue #255/#256/#257 mendapat komentar keputusan mempertahankan stack dan tetap terbuka.
