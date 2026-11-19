@@ -30,6 +30,8 @@ module.exports = {
     ];
     const matches = categories.filter(([, pattern]) => pattern.test(message)).map(([name]) => name);
     const category = error ? matches.join(",") || "unclassified" : "none";
+    const vocabulary = new Set("error failed failure build bundle bundling edge function functions manifest invalid validation validate property required additional properties unexpected token json parse syntax import export module modules node prisma pg fs crypto wasm native addon addons unsupported supported not found cannot find resolve resolution runtime middleware proxy package dependency dependencies size large limit exceeds exceeded maximum compressed uncompressed memory timeout network fetch request response status permission denied unauthorized forbidden path file directory missing cache tar tarball archive included excluded matcher matchers pattern patterns regular expression regexp lookahead group capture capturing duplicate name names version bootstrap deno esbuild stack unexpected expected object string number boolean undefined null array format schema declaration declarations config configuration generator environment variable secret value values must should be is are was of the a an in on for from to with and or as at by only using contains does do has have during requires use implementation implemented bytes mb kb code eexist enoent enoent eacces eperm err_invalid_arg_type".split(" "));
+    const hints = error ? [...new Set(message.toLowerCase().match(/[a-z_]+/g) || [])].filter((word) => vocabulary.has(word)).slice(0, 55).join(" ") : "none";
     let detail = "";
     try {
       const report = JSON.parse(await readFile(".netlify/build-diagnostics.json", "utf8"));
@@ -40,7 +42,7 @@ module.exports = {
     } catch { /* No command failure report. */ }
     utils.status.show({
       title: "Build diagnostics",
-      summary: `stage=${stage}; error=${category}${detail}`,
+      summary: `stage=${stage}; error=${category}${detail}; hints=${hints}`,
       text: "Only fixed diagnostic labels are published; credentials and raw logs are omitted.",
     });
   },
