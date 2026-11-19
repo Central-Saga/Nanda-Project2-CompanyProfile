@@ -1,8 +1,11 @@
-const { readFile } = require("node:fs/promises");
+const { readFile, rm } = require("node:fs/promises");
 let stage = "initialization";
 
 module.exports = {
-  onPreBuild() { stage = "application-build"; },
+  async onPreBuild() {
+    stage = "application-build";
+    await rm(".netlify/build-diagnostics.json", { force: true });
+  },
   onBuild() { stage = "adapter-and-bundling"; },
   onPostBuild() { stage = "post-build-validation"; },
   async onEnd({ error, utils }) {
