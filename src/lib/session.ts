@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
+import { roleSchema, type RoleName } from "@/types/domain";
 import crypto from "crypto";
 
 export function getSessionSecret(): Uint8Array {
@@ -11,7 +12,7 @@ export function getSessionSecret(): Uint8Array {
 
 export interface SessionPayload {
   userId: string;
-  role: string;
+  role: RoleName;
   sessionId: string;
   mustChangePassword?: boolean;
 }
@@ -35,7 +36,7 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
     });
     if (typeof payload.userId !== "string" || !payload.userId ||
         typeof payload.sessionId !== "string" || !payload.sessionId ||
-        typeof payload.role !== "string" ||
+        !roleSchema.safeParse(payload.role).success ||
         typeof payload.exp !== "number" ||
         (payload.mustChangePassword !== undefined && typeof payload.mustChangePassword !== "boolean")) {
       return null;
@@ -43,7 +44,7 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
     return {
       userId: payload.userId,
       sessionId: payload.sessionId,
-      role: payload.role,
+      role: roleSchema.parse(payload.role),
       mustChangePassword: payload.mustChangePassword,
     };
   } catch {

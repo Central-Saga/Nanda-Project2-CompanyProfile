@@ -338,3 +338,18 @@ pada kredensial server, dan menyajikan dokumen tidak tepercaya sebagai attachmen
 
 Lihat [arsitektur dan ADR](docs/ARCHITECTURE.md), [kontribusi](CONTRIBUTING.md),
 [changelog](CHANGELOG.md), dan [status issue audit](docs/ISSUE-STATUS.md).
+
+
+## Audit lanjutan
+
+- `npm run test:unit` / `npm run test:coverage`: Vitest, Testing Library dan MSW.
+- `npm run test:e2e`: Playwright desktop/mobile, memakai database khusus bernama `*audit*`.
+- `npm run test:seed`: fixture khusus database audit; menolak database lain.
+- `npm run codegen:check`: kontrak OpenAPI dan tipe diinferensikan dari skema Zod yang sama.
+- `npm run audit:types`, `audit:imports`, `audit:unused`: type coverage, circular imports, dead files.
+- `npm run audit:bundle` dan `audit:lighthouse`: dijalankan saat server produksi tes aktif di port 3100.
+
+Jangan menjalankan fixture E2E pada produksi. Lihat [operasional](docs/OPERATIONS.md)
+untuk isolasi environment, container, media privat, monitoring, locale/tema, dan rollback.
+Upload baru tidak lagi dipublikasikan langsung ke URL bucket. SVG dan PDF aktif ditolak;
+JPEG/PNG/WEBP didekode ulang, PDF diperiksa, lalu unduhan memerlukan sesi admin.

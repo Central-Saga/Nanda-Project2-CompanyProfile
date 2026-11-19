@@ -1,54 +1,29 @@
 "use client";
+import type { ProjectFormData } from "@/types/forms";
 
-import { useActionState, useEffect } from "react";
+import { ContentFormShell } from "@/components/admin/ContentFormShell";
+import { useContentForm } from "@/lib/use-content-form";
+
 import { createProjectAction, updateProjectAction } from "@/app/actions/project";
 import { FormField } from "@/components/admin/FormField";
 import { SubmitButton } from "@/components/admin/SubmitButton";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-interface ProjectFormProps {
-  initialData?: {
-    id: string;
-    slug: string;
-    projectUrl?: string | null;
-    startedAt?: string | null;
-    completedAt?: string | null;
-    durationMonths?: number | null;
-    teamSize?: number | null;
-    isFeatured: boolean;
-    isPublished: boolean;
-    sortOrder: number;
-    title: string;
-    summary?: string | null;
-    challenge?: string | null;
-    solution?: string | null;
-    result?: string | null;
-    content?: string | null;
-  };
+import { ProjectFields } from "./ProjectFields";
+
+export interface ProjectFormProps {
+  initialData?: ProjectFormData;
 }
 
 export function ProjectForm({ initialData }: ProjectFormProps) {
   const isEditing = Boolean(initialData);
   const action = isEditing ? updateProjectAction : createProjectAction;
-  const [state, formAction, isPending] = useActionState(action, null);
-  const router = useRouter();
+  const { state, formAction, isPending } = useContentForm(action);
 
-  useEffect(() => {
-    if (state?.success && state?.redirectUrl) {
-      router.push(state.redirectUrl);
-    }
-  }, [state, router]);
 
   return (
-    <form action={formAction} className="space-y-6 max-w-3xl">
-      {isEditing && <input type="hidden" name="id" value={initialData!.id} />}
+    <ContentFormShell action={formAction} pending={isPending} state={state} id={initialData?.id} className="space-y-6 max-w-3xl">
 
-      {state?.message && !state?.success && (
-        <div className="p-3 bg-red-950/50 border border-red-700/50 text-red-300 text-sm rounded font-mono">
-          {state.message}
-        </div>
-      )}
 
       <div className="p-5 bg-zinc-950 border border-zinc-900 rounded-lg space-y-4">
         <h2 className="text-sm font-bold font-mono uppercase tracking-wider text-zinc-300">
@@ -135,81 +110,7 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
         />
       </div>
 
-      <div className="p-5 bg-zinc-950 border border-zinc-900 rounded-lg space-y-4">
-        <h2 className="text-sm font-bold font-mono uppercase tracking-wider text-zinc-300">
-          Metadata & Tampilan
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            label="Tanggal Mulai"
-            name="startedAt"
-            type="date"
-            defaultValue={initialData?.startedAt || ""}
-            errors={state?.errors?.startedAt}
-          />
-
-          <FormField
-            label="Tanggal Selesai"
-            name="completedAt"
-            type="date"
-            defaultValue={initialData?.completedAt || ""}
-            errors={state?.errors?.completedAt}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FormField
-            label="Durasi (Bulan)"
-            name="durationMonths"
-            type="number"
-            defaultValue={initialData?.durationMonths ? String(initialData.durationMonths) : ""}
-            errors={state?.errors?.durationMonths}
-          />
-
-          <FormField
-            label="Ukuran Tim"
-            name="teamSize"
-            type="number"
-            defaultValue={initialData?.teamSize ? String(initialData.teamSize) : ""}
-            errors={state?.errors?.teamSize}
-          />
-
-          <FormField
-            label="Urutan Tampil"
-            name="sortOrder"
-            type="number"
-            defaultValue={initialData ? String(initialData.sortOrder) : "0"}
-            errors={state?.errors?.sortOrder}
-          />
-        </div>
-
-        <div className="flex items-center gap-6 pt-2">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              name="isFeatured"
-              defaultChecked={initialData ? initialData.isFeatured : false}
-              className="w-4 h-4 rounded bg-zinc-900 border-zinc-700 text-red-600 focus:ring-red-600"
-            />
-            <span className="text-xs font-mono uppercase text-zinc-300">
-              Jadikan Unggulan (Featured)
-            </span>
-          </label>
-
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              name="isPublished"
-              defaultChecked={initialData ? initialData.isPublished : false}
-              className="w-4 h-4 rounded bg-zinc-900 border-zinc-700 text-red-600 focus:ring-red-600"
-            />
-            <span className="text-xs font-mono uppercase text-zinc-300">
-              Publikasikan
-            </span>
-          </label>
-        </div>
-      </div>
+      <ProjectFields initialData={initialData} errors={state?.errors} />
 
       <div className="flex items-center gap-3">
         <SubmitButton
@@ -223,6 +124,6 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
           Batal
         </Link>
       </div>
-    </form>
+    </ContentFormShell>
   );
 }

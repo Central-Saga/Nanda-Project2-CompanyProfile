@@ -1,4 +1,6 @@
 "use client";
+import { Input } from "@/components/shared/ui/Input";
+
 
 import { useState } from "react";
 import type { UploadedMedia } from "@/app/actions/media";
@@ -42,7 +44,7 @@ export function MediaUploader({ onUploaded }: { onUploaded?: (media: UploadedMed
       <div className="flex flex-col items-center justify-center">
         <label className="cursor-pointer px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-mono text-zinc-200 uppercase tracking-wider rounded transition-colors">
           {loading ? "Sedang Mengunggah..." : "Pilih Berkas"}
-          <input
+          <Input
             type="file"
             onChange={handleFileChange}
             disabled={loading}

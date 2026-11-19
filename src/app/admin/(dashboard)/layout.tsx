@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LogoutButton } from "./LogoutButton";
 
+export const metadata = { robots: { index: false, follow: false } };
+
 export default async function AdminLayout({
   children,
 }: {
@@ -28,13 +30,14 @@ export default async function AdminLayout({
     { label: "Leads & Brief", href: "/admin/leads" },
     { label: "Konsultasi", href: "/admin/bookings" },
     { label: "Media Library", href: "/admin/media" },
+    { label: "Monitoring", href: "/admin/monitoring" },
     { label: "Audit Log", href: "/admin/audit-logs" },
   ];
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 flex">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-zinc-900 bg-zinc-950 flex flex-col shrink-0">
+      <aside className="hidden md:flex w-64 border-r border-zinc-900 bg-zinc-950 flex-col shrink-0">
         <div className="p-4 border-b border-zinc-900">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block animate-pulse"></span>
@@ -65,6 +68,7 @@ export default async function AdminLayout({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
+        <details className="md:hidden border-b border-zinc-800 p-3"><summary className="min-h-11 cursor-pointer">Menu admin</summary><nav aria-label="Navigasi admin mobile" className="flex flex-wrap gap-3">{navItems.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}<LogoutButton /></nav></details>
         <header className="h-14 border-b border-zinc-900 bg-zinc-950/40 px-6 flex items-center justify-between">
           <div className="text-xs font-mono text-zinc-400">
             Peran: <span className="text-zinc-200 uppercase">{user.role}</span>
@@ -74,7 +78,7 @@ export default async function AdminLayout({
           </div>
         </header>
 
-        <main id="main-content" tabIndex={-1} className="flex-1 p-6 overflow-y-auto bg-black">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1 p-6 bg-black">{children}</main>
       </div>
     </div>
   );

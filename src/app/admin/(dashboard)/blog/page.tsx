@@ -1,3 +1,6 @@
+import { RowActions } from "@/components/admin/RowActions";
+import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
+import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -9,9 +12,12 @@ export const metadata = {
   title: "Blog / Artikel",
 };
 
-export default async function BlogPage() {
+export default async function BlogPage({ searchParams }: { searchParams: PageSearchParams }) {
   await requireAuth();
-  const posts = await prisma.post.findMany({
+  const paging = await readPage(searchParams);
+  const rows = await prisma.post.findMany({
+    skip: paging.skip,
+    take: paging.take,
     where: { deletedAt: null },
     include: {
       translations: { where: { locale: "id" } },
@@ -21,8 +27,10 @@ export default async function BlogPage() {
         },
       },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ createdAt: "desc" }, { id: "asc" }],
   });
+
+  const posts = rows.slice(0, PAGE_SIZE);
 
   return (
     <div>
@@ -47,15 +55,16 @@ export default async function BlogPage() {
           actionHref="/admin/blog/new"
         />
       ) : (
-        <div className="border border-zinc-900 rounded-lg overflow-hidden bg-zinc-950">
+        <div className="border border-zinc-900 rounded-lg overflow-x-auto bg-zinc-950">
           <table className="w-full text-left text-xs font-mono">
+<caption className="sr-only">Blog</caption>
             <thead className="bg-zinc-900/60 text-zinc-400 uppercase tracking-wider border-b border-zinc-900">
               <tr>
-                <th className="py-3 px-4">Judul Artikel</th>
-                <th className="py-3 px-4">Kategori</th>
-                <th className="py-3 px-4">Unggulan</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Aksi</th>
+                <th scope="col" className="py-3 px-4">Judul Artikel</th>
+                <th scope="col" className="py-3 px-4">Kategori</th>
+                <th scope="col" className="py-3 px-4">Unggulan</th>
+                <th scope="col" className="py-3 px-4">Status</th>
+                <th scope="col" className="py-3 px-4 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-900 text-zinc-300">
@@ -92,15 +101,7 @@ export default async function BlogPage() {
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right space-x-3">
-                      <Link
-                        href={`/admin/blog/${item.id}/edit`}
-                        className="text-zinc-400 hover:text-zinc-100 transition"
-                      >
-                        Edit
-                      </Link>
-                      <DeletePostButton id={item.id} title={trans?.title || item.slug} />
-                    </td>
+                    <RowActions editHref={`/admin/blog/${item.id}/edit`}><DeletePostButton id={item.id} title={trans?.title || item.slug} /></RowActions>
                   </tr>
                 );
               })}
@@ -108,6 +109,7 @@ export default async function BlogPage() {
           </table>
         </div>
       )}
-    </div>
+    <Pagination page={paging.page} hasNext={rows.length > PAGE_SIZE} />
+</div>
   );
 }

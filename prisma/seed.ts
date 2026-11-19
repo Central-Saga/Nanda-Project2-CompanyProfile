@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import "dotenv/config";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({ options: "-c timezone=UTC", connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 

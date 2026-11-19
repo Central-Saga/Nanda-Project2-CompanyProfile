@@ -1,17 +1,24 @@
+import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
+import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { MediaUploader } from "./MediaUploader";
+import dynamic from "next/dynamic";
+const MediaUploader = dynamic(() => import("./MediaUploader").then((module) => module.MediaUploader));
 import { DeleteMediaButton } from "./DeleteMediaButton";
 
-export default async function MediaPage() {
+export default async function MediaPage({ searchParams }: { searchParams: PageSearchParams }) {
   await requireAuth();
-  const mediaList = await prisma.mediaFile.findMany({
+  const paging = await readPage(searchParams);
+  const rows = await prisma.mediaFile.findMany({
+    skip: paging.skip,
+    take: paging.take,
     where: { deletedAt: null },
-    orderBy: { createdAt: "desc" },
-    take: 50,
+    orderBy: [{ createdAt: "desc" }, { id: "asc" }],
   });
+
+  const mediaList = rows.slice(0, PAGE_SIZE);
 
   return (
     <div className="space-y-6">
@@ -22,7 +29,7 @@ export default async function MediaPage() {
 
       <MediaUploader />
 
-      <div className="bg-zinc-950 border border-zinc-900 rounded-lg overflow-hidden">
+      <div className="bg-zinc-950 border border-zinc-900 rounded-lg overflow-x-auto">
         {mediaList.length === 0 ? (
           <EmptyState
             title="Belum ada berkas media"
@@ -31,13 +38,14 @@ export default async function MediaPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-mono">
+<caption className="sr-only">Media</caption>
               <thead className="bg-zinc-900/50 text-zinc-400 border-b border-zinc-800 uppercase text-[11px] tracking-wider">
                 <tr>
-                  <th className="py-3 px-4">Nama Berkas</th>
-                  <th className="py-3 px-4">Tipe & Ukuran</th>
-                  <th className="py-3 px-4">Kunci Storage</th>
-                  <th className="py-3 px-4">Tautan</th>
-                  <th className="py-3 px-4 text-right">Aksi</th>
+                  <th scope="col" className="py-3 px-4">Nama Berkas</th>
+                  <th scope="col" className="py-3 px-4">Tipe & Ukuran</th>
+                  <th scope="col" className="py-3 px-4">Kunci Storage</th>
+                  <th scope="col" className="py-3 px-4">Tautan</th>
+                  <th scope="col" className="py-3 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-900 text-zinc-300">
@@ -80,6 +88,7 @@ export default async function MediaPage() {
           </div>
         )}
       </div>
-    </div>
+    <Pagination page={paging.page} hasNext={rows.length > PAGE_SIZE} />
+</div>
   );
 }

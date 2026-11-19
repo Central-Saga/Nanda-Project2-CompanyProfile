@@ -1,5 +1,6 @@
 "use server";
 
+import { roleSchema } from "@/types/domain";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
@@ -53,19 +54,13 @@ export async function loginAction(_prevState: ActionState | null, formData: Form
 
   const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
   if (!isPasswordValid) {
-    const updatedFailed = user.failedLoginCount + 1;
-    let lockedUntil: Date | null = null;
-    if (updatedFailed >= 5) {
-      lockedUntil = new Date(Date.now() + 15 * 60 * 1000); // Lock 15 mins
-    }
-
-    await prisma.user.update({
+    const failed = await prisma.user.update({
       where: { id: user.id },
-      data: {
-        failedLoginCount: updatedFailed,
-        lockedUntil,
-      },
+      data: { failedLoginCount: user.lockedUntil && user.lockedUntil <= new Date() ? 1 : { increment: 1 } },
     });
+    if (failed.failedLoginCount >= 5) {
+      await prisma.user.update({ where: { id: user.id }, data: { lockedUntil: new Date(Date.now() + 900000) } });
+    }
 
     return {
       success: false,
@@ -73,58 +68,22 @@ export async function loginAction(_prevState: ActionState | null, formData: Form
     };
   }
 
-  // Create DB Session
-  const sessionRecord = await prisma.session.create({
-    data: {
-      userId: user.id,
-      tokenHash: "temp_hash",
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-    },
+  // Lock the identity while minting the session. A concurrent password replacement
+  // either revokes this new session or makes this password snapshot obsolete.
+  const token = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM users WHERE id = ${user.id}::uuid FOR UPDATE`;
+    const current = await tx.user.findUnique({ where: { id: user.id } });
+    if (!current || current.passwordHash !== user.passwordHash || !current.isActive || current.deletedAt || (current.lockedUntil && current.lockedUntil > new Date())) return null;
+    const session = await tx.session.create({ data: { userId: user.id, tokenHash: "pending", expiresAt: new Date(Date.now() + 86400000) } });
+    const value = await createSessionToken({ userId: user.id, role: roleSchema.parse(user.role.name), sessionId: session.id, mustChangePassword: current.mustChangePassword });
+    await tx.session.update({ where: { id: session.id }, data: { tokenHash: hashToken(value) } });
+    await tx.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null, lastLoginAt: new Date() } });
+    await tx.auditLog.create({ data: { userId: user.id, action: "LOGIN", entityType: "User", entityId: user.id } });
+    return value;
   });
-
-  const token = await createSessionToken({
-    userId: user.id,
-    role: user.role.name,
-    sessionId: sessionRecord.id,
-    mustChangePassword: user.mustChangePassword,
-  });
-
-  const hashedToken = hashToken(token);
-  await prisma.session.update({
-    where: { id: sessionRecord.id },
-    data: { tokenHash: hashedToken },
-  });
-
-  // Reset failed login & update last login
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      failedLoginCount: 0,
-      lockedUntil: null,
-      lastLoginAt: new Date(),
-    },
-  });
-
-  // Set HTTP-Only Cookie
+  if (!token) return { success: false, message: "Email atau password salah" };
   const cookieStore = await cookies();
-  cookieStore.set("session_token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 24 * 60 * 60,
-  });
-
-  // Audit log
-  await prisma.auditLog.create({
-    data: {
-      userId: user.id,
-      action: "LOGIN",
-      entityType: "User",
-      entityId: user.id,
-      newValues: { email: user.email },
-    },
-  });
+  cookieStore.set("session_token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 86400 });
 
   if (user.mustChangePassword) {
     return {

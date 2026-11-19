@@ -1,4 +1,5 @@
 "use server";
+import { readProjectForm } from "@/lib/form-data";
 
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
@@ -12,23 +13,7 @@ export async function createProjectAction(
 ): Promise<ActionState> {
   const user = await requireAuth();
 
-  const rawData = {
-    slug: formData.get("slug"),
-    projectUrl: formData.get("projectUrl"),
-    startedAt: formData.get("startedAt"),
-    completedAt: formData.get("completedAt"),
-    durationMonths: formData.get("durationMonths") || "",
-    teamSize: formData.get("teamSize") || "",
-    isFeatured: formData.get("isFeatured") === "on",
-    isPublished: formData.get("isPublished") === "on",
-    sortOrder: formData.get("sortOrder"),
-    title: formData.get("title"),
-    summary: formData.get("summary"),
-    challenge: formData.get("challenge"),
-    solution: formData.get("solution"),
-    result: formData.get("result"),
-    content: formData.get("content"),
-  };
+  const rawData = readProjectForm(formData);
 
   const parsed = projectSchema.safeParse(rawData);
   if (!parsed.success) {
@@ -92,23 +77,7 @@ export async function updateProjectAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID proyek tidak ditemukan" };
 
-  const rawData = {
-    slug: formData.get("slug"),
-    projectUrl: formData.get("projectUrl"),
-    startedAt: formData.get("startedAt"),
-    completedAt: formData.get("completedAt"),
-    durationMonths: formData.get("durationMonths") || "",
-    teamSize: formData.get("teamSize") || "",
-    isFeatured: formData.get("isFeatured") === "on",
-    isPublished: formData.get("isPublished") === "on",
-    sortOrder: formData.get("sortOrder"),
-    title: formData.get("title"),
-    summary: formData.get("summary"),
-    challenge: formData.get("challenge"),
-    solution: formData.get("solution"),
-    result: formData.get("result"),
-    content: formData.get("content"),
-  };
+  const rawData = readProjectForm(formData);
 
   const parsed = projectSchema.safeParse(rawData);
   if (!parsed.success) {

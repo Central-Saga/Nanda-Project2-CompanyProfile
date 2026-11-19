@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { prisma } from "@/lib/prisma";
+import { getCompany } from "@/lib/company";
 
 export async function Footer() {
-  const company = await prisma.companyProfile.findFirst();
+  const company = await getCompany();
 
   const brandName = company?.companyName || "PT Rekasaya Digital International";
   const tagline = company?.tagline || "Solusi Rekayasa Perangkat Lunak Skala Enterprise";
@@ -18,7 +18,8 @@ export async function Footer() {
                 <Image
                   src="/logo.png"
                   alt="Logo"
-                  fill
+                  width={32}
+                  height={32}
                   className="object-contain p-0.5"
                 />
               </div>
@@ -94,7 +95,7 @@ export async function Footer() {
 
         <div className="mt-12 pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-zinc-400">
           <div>
-            &copy; {new Date().getFullYear()} {brandName}. Hak Cipta Dilindungi.
+            &copy; {new Intl.DateTimeFormat("id-ID", { year: "numeric", timeZone: "Asia/Makassar" }).format(new Date())} {brandName}. Hak Cipta Dilindungi.
           </div>
           <div className="text-xs text-zinc-400">
             Sistem Database Terintegrasi &bull; Privasi Terjaga

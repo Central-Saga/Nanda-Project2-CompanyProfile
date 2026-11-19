@@ -1,8 +1,9 @@
+import { pageMetadata } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-interface Props {
+export interface Props {
   params: Promise<{ slug: string }>;
 }
 
@@ -13,9 +14,8 @@ export async function generateMetadata({ params }: Props) {
     include: { translations: { where: { locale: "id" } } },
   });
 
-  return {
-    title: job?.translations[0]?.title || slug,
-  };
+  if (!job || job.status !== "open") notFound();
+  return pageMetadata(job?.translations[0]?.title || slug, `/karier/${encodeURIComponent(slug)}`);
 }
 
 export default async function JobDetailPage({ params }: Props) {

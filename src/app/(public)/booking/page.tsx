@@ -1,8 +1,7 @@
+import { pageMetadata } from "@/lib/seo";
 import { BookingForm } from "./BookingForm";
 
-export const metadata = {
-  title: "Jadwalkan Konsultasi Teknis",
-};
+export const metadata = pageMetadata('Jadwalkan Konsultasi Teknis', '/booking');
 
 export default function BookingPage() {
   return (

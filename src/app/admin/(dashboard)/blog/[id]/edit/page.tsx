@@ -8,7 +8,7 @@ export const metadata = {
   title: "Edit Artikel",
 };
 
-interface EditPostPageProps {
+export interface EditPostPageProps {
   params: Promise<{ id: string }>;
 }
 
@@ -44,7 +44,7 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
     id: post.id,
     slug: post.slug,
     categoryId: post.categoryId,
-    status: post.status as "draft" | "published",
+    status: post.status,
     isFeatured: post.isFeatured,
     title: trans?.title || "",
     excerpt: trans?.excerpt || "",

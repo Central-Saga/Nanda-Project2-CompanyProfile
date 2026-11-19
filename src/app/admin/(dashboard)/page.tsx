@@ -1,3 +1,4 @@
+import { formatDate, formatDateTime, formatNumber } from "@/lib/format";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -69,7 +70,7 @@ export default async function DashboardPage() {
               {s.label}
             </div>
             <div className="text-2xl font-bold font-mono text-zinc-100 flex items-center justify-between">
-              <span>{s.value}</span>
+              <span>{formatNumber(s.value)}</span>
               {s.alert && <span className="w-2 h-2 rounded-full bg-red-600" />}
             </div>
           </Link>
@@ -137,7 +138,7 @@ export default async function DashboardPage() {
                       {b.lead?.fullName || "Klien Terdaftar"}
                     </div>
                     <div className="text-zinc-500">
-                      {new Date(b.preferredDate).toLocaleDateString("id-ID")} • {b.preferredTimeSlot}
+                      {formatDate(b.preferredDate)} • {b.preferredTimeSlot}
                     </div>
                   </div>
                   <span className="px-2 py-0.5 rounded bg-zinc-900 text-[10px] text-zinc-400 uppercase">
@@ -169,7 +170,7 @@ export default async function DashboardPage() {
                   <span className="text-zinc-600">({a.entityId?.slice(0, 8)}...)</span>
                 </div>
                 <div className="text-zinc-500 text-[11px]">
-                  {a.user?.fullName || "Sistem"} • {new Date(a.createdAt).toLocaleString("id-ID")}
+                  {a.user?.fullName || "Sistem"} • {formatDateTime(a.createdAt)}
                 </div>
               </div>
             ))

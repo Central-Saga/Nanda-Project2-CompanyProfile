@@ -1,9 +1,8 @@
+import { pageMetadata } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Peluang Karir Rekayasa",
-};
+export const metadata = pageMetadata('Peluang Karir Rekayasa', '/karier');
 
 export default async function CareersPublicPage() {
   const jobs = await prisma.jobOpening.findMany({

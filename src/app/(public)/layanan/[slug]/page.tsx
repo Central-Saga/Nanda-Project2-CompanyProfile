@@ -1,8 +1,9 @@
+import { pageMetadata } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-interface Props {
+export interface Props {
   params: Promise<{ slug: string }>;
 }
 
@@ -13,9 +14,8 @@ export async function generateMetadata({ params }: Props) {
     include: { translations: { where: { locale: "id" } } },
   });
 
-  return {
-    title: service?.translations[0]?.name || slug,
-  };
+  if (!service || !service.isPublished || service.deletedAt) notFound();
+  return pageMetadata(service?.translations[0]?.name || slug, `/layanan/${encodeURIComponent(slug)}`);
 }
 
 export default async function ServiceDetailPage({ params }: Props) {

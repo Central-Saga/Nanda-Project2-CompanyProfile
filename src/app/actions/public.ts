@@ -1,5 +1,6 @@
 "use server";
 
+import { findOrCreateLead } from "@/lib/public-lead";
 import { prisma } from "@/lib/prisma";
 import {
   publicContactSchema,
@@ -50,23 +51,8 @@ export async function submitContactAction(
   try {
     await prisma.$transaction(async (tx) => {
       // Find or create lead
-      let lead = await tx.lead.findFirst({
-        where: { email },
-      });
+      const lead = await findOrCreateLead(tx, { fullName, email, phone, companyName, consentPrivacy }, "contact_form");
 
-      if (!lead) {
-        lead = await tx.lead.create({
-          data: {
-            sourceType: "contact_form",
-            fullName,
-            email,
-            phone: phone || null,
-            companyName: companyName || null,
-            consentPrivacy,
-            consentAt: new Date(),
-          },
-        });
-      }
 
       // Record message in contactMessages
       await tx.contactMessage.create({
@@ -141,23 +127,8 @@ export async function submitBriefAction(
 
   try {
     await prisma.$transaction(async (tx) => {
-      let lead = await tx.lead.findFirst({
-        where: { email },
-      });
+      const lead = await findOrCreateLead(tx, { fullName, email, phone, companyName, consentPrivacy }, "project_brief");
 
-      if (!lead) {
-        lead = await tx.lead.create({
-          data: {
-            sourceType: "project_brief",
-            fullName,
-            email,
-            phone: phone || null,
-            companyName: companyName || null,
-            consentPrivacy,
-            consentAt: new Date(),
-          },
-        });
-      }
 
       await tx.projectBrief.create({
         data: {
@@ -228,23 +199,8 @@ export async function submitBookingAction(
 
   try {
     await prisma.$transaction(async (tx) => {
-      let lead = await tx.lead.findFirst({
-        where: { email },
-      });
+      const lead = await findOrCreateLead(tx, { fullName, email, phone, companyName, consentPrivacy }, "contact_form");
 
-      if (!lead) {
-        lead = await tx.lead.create({
-          data: {
-            sourceType: "contact_form",
-            fullName,
-            email,
-            phone: phone || null,
-            companyName: companyName || null,
-            consentPrivacy,
-            consentAt: new Date(),
-          },
-        });
-      }
 
       await tx.consultationBooking.create({
         data: {

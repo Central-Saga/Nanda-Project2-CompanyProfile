@@ -1,4 +1,5 @@
 "use server";
+import { readJobForm } from "@/lib/form-data";
 
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
@@ -12,23 +13,7 @@ export async function createJobAction(
 ): Promise<ActionState> {
   const user = await requireAuth();
 
-  const rawData = {
-    slug: formData.get("slug"),
-    department: formData.get("department"),
-    employmentType: formData.get("employmentType") || "full_time",
-    workMode: formData.get("workMode") || "onsite",
-    location: formData.get("location"),
-    salaryMin: formData.get("salaryMin") || "",
-    salaryMax: formData.get("salaryMax") || "",
-    showSalary: formData.get("showSalary") === "on",
-    status: formData.get("status") || "draft",
-    closesAt: formData.get("closesAt") || "",
-    title: formData.get("title"),
-    description: formData.get("description"),
-    responsibilities: formData.get("responsibilities"),
-    requirements: formData.get("requirements"),
-    benefits: formData.get("benefits"),
-  };
+  const rawData = readJobForm(formData);
 
   const parsed = jobOpeningSchema.safeParse(rawData);
   if (!parsed.success) {
@@ -94,23 +79,7 @@ export async function updateJobAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID lowongan tidak ditemukan" };
 
-  const rawData = {
-    slug: formData.get("slug"),
-    department: formData.get("department"),
-    employmentType: formData.get("employmentType") || "full_time",
-    workMode: formData.get("workMode") || "onsite",
-    location: formData.get("location"),
-    salaryMin: formData.get("salaryMin") || "",
-    salaryMax: formData.get("salaryMax") || "",
-    showSalary: formData.get("showSalary") === "on",
-    status: formData.get("status") || "draft",
-    closesAt: formData.get("closesAt") || "",
-    title: formData.get("title"),
-    description: formData.get("description"),
-    responsibilities: formData.get("responsibilities"),
-    requirements: formData.get("requirements"),
-    benefits: formData.get("benefits"),
-  };
+  const rawData = readJobForm(formData);
 
   const parsed = jobOpeningSchema.safeParse(rawData);
   if (!parsed.success) {

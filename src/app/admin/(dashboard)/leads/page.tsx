@@ -1,3 +1,5 @@
+import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
+import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -8,15 +10,20 @@ export const metadata = {
   title: "Leads & Brief",
 };
 
-export default async function LeadsPage() {
+export default async function LeadsPage({ searchParams }: { searchParams: PageSearchParams }) {
   await requireAuth();
-  const leads = await prisma.lead.findMany({
+  const paging = await readPage(searchParams);
+  const rows = await prisma.lead.findMany({
+    skip: paging.skip,
+    take: paging.take,
     include: {
       brief: true,
       messages: true,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ createdAt: "desc" }, { id: "asc" }],
   });
+
+  const leads = rows.slice(0, PAGE_SIZE);
 
   return (
     <div>
@@ -31,16 +38,17 @@ export default async function LeadsPage() {
           description="Formulir kontak dan konsultasi di website publik akan otomatis masuk dan tercatat di sini."
         />
       ) : (
-        <div className="border border-zinc-900 rounded-lg overflow-hidden bg-zinc-950">
+        <div className="border border-zinc-900 rounded-lg overflow-x-auto bg-zinc-950">
           <table className="w-full text-left text-xs font-mono">
+<caption className="sr-only">Leads</caption>
             <thead className="bg-zinc-900/60 text-zinc-400 uppercase tracking-wider border-b border-zinc-900">
               <tr>
-                <th className="py-3 px-4">Nama Lengkap</th>
-                <th className="py-3 px-4">Kontak</th>
-                <th className="py-3 px-4">Perusahaan</th>
-                <th className="py-3 px-4">Sumber</th>
-                <th className="py-3 px-4">Brief / Pesan</th>
-                <th className="py-3 px-4">Status Lead</th>
+                <th scope="col" className="py-3 px-4">Nama Lengkap</th>
+                <th scope="col" className="py-3 px-4">Kontak</th>
+                <th scope="col" className="py-3 px-4">Perusahaan</th>
+                <th scope="col" className="py-3 px-4">Sumber</th>
+                <th scope="col" className="py-3 px-4">Brief / Pesan</th>
+                <th scope="col" className="py-3 px-4">Status Lead</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-900 text-zinc-300">
@@ -79,6 +87,7 @@ export default async function LeadsPage() {
           </table>
         </div>
       )}
-    </div>
+    <Pagination page={paging.page} hasNext={rows.length > PAGE_SIZE} />
+</div>
   );
 }

@@ -1,3 +1,4 @@
+import { dateInput } from "@/lib/format";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -8,7 +9,7 @@ export const metadata = {
   title: "Edit Lowongan Karir",
 };
 
-interface EditJobPageProps {
+export interface EditJobPageProps {
   params: Promise<{ id: string }>;
 }
 
@@ -40,7 +41,7 @@ export default async function EditJobPage({ params }: EditJobPageProps) {
     salaryMax: job.salaryMax ? Number(job.salaryMax) : null,
     showSalary: job.showSalary,
     status: job.status,
-    closesAt: job.closesAt ? job.closesAt.toISOString().split("T")[0] : null,
+    closesAt: job.closesAt ? dateInput(job.closesAt) : null,
     title: trans?.title || "",
     description: trans?.description || "",
     responsibilities: trans?.responsibilities || "",

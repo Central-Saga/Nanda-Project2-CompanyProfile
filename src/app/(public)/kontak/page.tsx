@@ -1,9 +1,8 @@
+import { pageMetadata } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import { ContactForm } from "./ContactForm";
 
-export const metadata = {
-  title: "Hubungi Kami",
-};
+export const metadata = pageMetadata('Hubungi Kami', '/kontak');
 
 export default async function ContactPage() {
   const company = await prisma.companyProfile.findFirst();

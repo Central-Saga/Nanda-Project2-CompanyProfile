@@ -1,4 +1,5 @@
-interface SubmitButtonProps {
+import { Button } from "@/components/shared/ui/Button";
+export interface SubmitButtonProps {
   label?: string;
   pendingLabel?: string;
   pending?: boolean;
@@ -17,8 +18,8 @@ export function SubmitButton({
     : "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500";
 
   return (
-    <button type="submit" disabled={pending} className={`${base} ${colors}`}>
+    <Button type="submit" disabled={pending} className={`${base} ${colors}`}>
       {pending ? pendingLabel : label}
-    </button>
+    </Button>
   );
 }

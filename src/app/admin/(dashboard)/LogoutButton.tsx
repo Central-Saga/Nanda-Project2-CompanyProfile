@@ -1,4 +1,6 @@
 "use client";
+import { Button } from "@/components/shared/ui/Button";
+
 
 import { logoutAction } from "@/app/actions/auth";
 import { useState } from "react";
@@ -16,7 +18,7 @@ export function LogoutButton() {
   }
 
   return (
-    <button
+    <Button
       disabled={pending}
       onClick={handleLogout}
       className="text-xs font-mono text-zinc-400 hover:text-red-400 transition flex items-center gap-1.5"
@@ -35,6 +37,6 @@ export function LogoutButton() {
         />
       </svg>
       Keluar
-    </button>
+    </Button>
   );
 }

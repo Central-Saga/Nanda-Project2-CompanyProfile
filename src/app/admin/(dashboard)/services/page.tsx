@@ -1,3 +1,6 @@
+import { RowActions } from "@/components/admin/RowActions";
+import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
+import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -9,17 +12,22 @@ export const metadata = {
   title: "Layanan",
 };
 
-export default async function ServicesPage() {
+export default async function ServicesPage({ searchParams }: { searchParams: PageSearchParams }) {
   await requireAuth();
-  const services = await prisma.service.findMany({
+  const paging = await readPage(searchParams);
+  const rows = await prisma.service.findMany({
+    skip: paging.skip,
+    take: paging.take,
     where: { deletedAt: null },
     include: {
       translations: {
         where: { locale: "id" },
       },
     },
-    orderBy: { sortOrder: "asc" },
+    orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
   });
+
+  const services = rows.slice(0, PAGE_SIZE);
 
   return (
     <div>
@@ -44,15 +52,16 @@ export default async function ServicesPage() {
           actionHref="/admin/services/new"
         />
       ) : (
-        <div className="border border-zinc-900 rounded-lg overflow-hidden bg-zinc-950">
+        <div className="border border-zinc-900 rounded-lg overflow-x-auto bg-zinc-950">
           <table className="w-full text-left text-xs font-mono">
+<caption className="sr-only">Services</caption>
             <thead className="bg-zinc-900/60 text-zinc-400 uppercase tracking-wider border-b border-zinc-900">
               <tr>
-                <th className="py-3 px-4">Nama Layanan</th>
-                <th className="py-3 px-4">Slug</th>
-                <th className="py-3 px-4">Urutan</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Aksi</th>
+                <th scope="col" className="py-3 px-4">Nama Layanan</th>
+                <th scope="col" className="py-3 px-4">Slug</th>
+                <th scope="col" className="py-3 px-4">Urutan</th>
+                <th scope="col" className="py-3 px-4">Status</th>
+                <th scope="col" className="py-3 px-4 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-900 text-zinc-300">
@@ -76,15 +85,7 @@ export default async function ServicesPage() {
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right space-x-3">
-                      <Link
-                        href={`/admin/services/${item.id}/edit`}
-                        className="text-zinc-400 hover:text-zinc-100 transition"
-                      >
-                        Edit
-                      </Link>
-                      <DeleteServiceButton id={item.id} name={trans?.name || item.slug} />
-                    </td>
+                    <RowActions editHref={`/admin/services/${item.id}/edit`}><DeleteServiceButton id={item.id} name={trans?.name || item.slug} /></RowActions>
                   </tr>
                 );
               })}
@@ -92,6 +93,7 @@ export default async function ServicesPage() {
           </table>
         </div>
       )}
-    </div>
+    <Pagination page={paging.page} hasNext={rows.length > PAGE_SIZE} />
+</div>
   );
 }

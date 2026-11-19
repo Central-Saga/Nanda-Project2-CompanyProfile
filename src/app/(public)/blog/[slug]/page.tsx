@@ -1,8 +1,10 @@
+import { pageMetadata } from "@/lib/seo";
+import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-interface Props {
+export interface Props {
   params: Promise<{ slug: string }>;
 }
 
@@ -13,9 +15,8 @@ export async function generateMetadata({ params }: Props) {
     include: { translations: { where: { locale: "id" } } },
   });
 
-  return {
-    title: post?.translations[0]?.title || slug,
-  };
+  if (!post || post.status !== "published" || post.deletedAt) notFound();
+  return pageMetadata(post?.translations[0]?.title || slug, `/blog/${encodeURIComponent(slug)}`);
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -36,7 +37,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const trans = post.translations[0];
   const dateStr = post.publishedAt
-    ? post.publishedAt.toISOString().split("T")[0]
+    ? formatDate(post.publishedAt)
     : "";
 
   return (

@@ -8,7 +8,7 @@ export const metadata = {
   title: "Edit Layanan",
 };
 
-interface EditServicePageProps {
+export interface EditServicePageProps {
   params: Promise<{ id: string }>;
 }
 

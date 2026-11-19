@@ -1,4 +1,9 @@
 "use client";
+import { ContactFields } from "@/components/public/ContactFields";
+import { FormFeedback } from "@/components/public/FormFeedback";
+import { Input } from "@/components/shared/ui/Input";
+
+import { SmartForm } from "@/components/shared/SmartForm";
 
 import { useActionState } from "react";
 import { submitContactAction } from "@/app/actions/public";
@@ -8,99 +13,25 @@ export function ContactForm() {
   const [state, formAction, isPending] = useActionState(submitContactAction, null);
 
   return (
-    <form action={formAction} className="space-y-4 max-w-xl">
-      {state?.message && (
-        <div
-          className={`p-4 rounded text-xs font-sans border ${
-            state.success
-              ? "bg-green-950/40 border-green-800 text-green-300"
-              : "bg-red-950/40 border-red-800 text-red-300"
-          }`}
-        >
-          {state.message}
-        </div>
-      )}
+    <SmartForm action={formAction} pending={isPending} success={state?.success} className="space-y-4 max-w-xl">
+      <FormFeedback state={state} />
 
       {/* Honeypot field (hidden from real users) */}
-      <input
+      <Input
         type="text"
         name="websiteUrl"
-        style={{ display: "none" }}
+        hidden
         tabIndex={-1}
         autoComplete="off"
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-sans uppercase tracking-wider text-zinc-400 mb-1">
-            Nama Lengkap <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="fullName"
-            required
-            placeholder="Irwan Setiawan"
-            className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 text-zinc-100 rounded text-sm focus:outline-none focus:border-red-600 font-sans"
-          />
-          {state?.errors?.fullName && (
-            <p className="text-xs text-red-400 mt-1">{state.errors.fullName[0]}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-xs font-sans uppercase tracking-wider text-zinc-400 mb-1">
-            Email Perusahaan <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            name="email"
-            required
-            placeholder="irwan@perusahaan.co.id"
-            className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 text-zinc-100 rounded text-sm focus:outline-none focus:border-red-600 font-sans"
-          />
-          {state?.errors?.email && (
-            <p className="text-xs text-red-400 mt-1">{state.errors.email[0]}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-sans uppercase tracking-wider text-zinc-400 mb-1">
-            Nomor Telepon
-          </label>
-          <input
-            type="tel"
-            name="phone"
-            placeholder="081234567890"
-            className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 text-zinc-100 rounded text-sm focus:outline-none focus:border-red-600 font-sans"
-          />
-          {state?.errors?.phone && (
-            <p className="text-xs text-red-400 mt-1">{state.errors.phone[0]}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-xs font-sans uppercase tracking-wider text-zinc-400 mb-1">
-            Nama Perusahaan
-          </label>
-          <input
-            type="text"
-            name="companyName"
-            placeholder="PT Maju Bangsa"
-            className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 text-zinc-100 rounded text-sm focus:outline-none focus:border-red-600 font-sans"
-          />
-          {state?.errors?.companyName && (
-            <p className="text-xs text-red-400 mt-1">{state.errors.companyName[0]}</p>
-          )}
-        </div>
-      </div>
+      <ContactFields errors={state?.errors} />
 
       <div>
-        <label className="block text-xs font-sans uppercase tracking-wider text-zinc-400 mb-1">
+        <label className="block text-xs font-sans uppercase tracking-wider text-zinc-400 mb-1" htmlFor="subject">
           Subjek Pesan <span className="text-red-500">*</span>
         </label>
-        <input
+        <Input
           type="text"
           name="subject"
           required
@@ -113,11 +44,11 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label className="block text-xs font-sans uppercase tracking-wider text-zinc-400 mb-1">
+        <label className="block text-xs font-sans uppercase tracking-wider text-zinc-400 mb-1" htmlFor="message">
           Pesan <span className="text-red-500">*</span>
         </label>
         <textarea
-          name="message"
+          id="message" name="message"
           required
           rows={4}
           placeholder="Tuliskan pertanyaan atau deskripsi kebutuhan Anda di sini..."
@@ -130,7 +61,7 @@ export function ContactForm() {
 
       <div className="pt-2">
         <label className="flex items-start gap-2 cursor-pointer">
-          <input
+          <Input
             type="checkbox"
             name="consentPrivacy"
             required
@@ -148,6 +79,6 @@ export function ContactForm() {
       <div className="pt-2">
         <SubmitButton pending={isPending} label="Kirim Pesan Kontak" />
       </div>
-    </form>
+    </SmartForm>
   );
 }

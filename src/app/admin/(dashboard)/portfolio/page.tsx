@@ -1,3 +1,6 @@
+import { RowActions } from "@/components/admin/RowActions";
+import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
+import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -9,17 +12,22 @@ export const metadata = {
   title: "Portofolio",
 };
 
-export default async function PortfolioPage() {
+export default async function PortfolioPage({ searchParams }: { searchParams: PageSearchParams }) {
   await requireAuth();
-  const projects = await prisma.project.findMany({
+  const paging = await readPage(searchParams);
+  const rows = await prisma.project.findMany({
+    skip: paging.skip,
+    take: paging.take,
     where: { deletedAt: null },
     include: {
       translations: {
         where: { locale: "id" },
       },
     },
-    orderBy: { sortOrder: "asc" },
+    orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
   });
+
+  const projects = rows.slice(0, PAGE_SIZE);
 
   return (
     <div>
@@ -44,15 +52,16 @@ export default async function PortfolioPage() {
           actionHref="/admin/portfolio/new"
         />
       ) : (
-        <div className="border border-zinc-900 rounded-lg overflow-hidden bg-zinc-950">
+        <div className="border border-zinc-900 rounded-lg overflow-x-auto bg-zinc-950">
           <table className="w-full text-left text-xs font-mono">
+<caption className="sr-only">Portfolio</caption>
             <thead className="bg-zinc-900/60 text-zinc-400 uppercase tracking-wider border-b border-zinc-900">
               <tr>
-                <th className="py-3 px-4">Judul Proyek</th>
-                <th className="py-3 px-4">Slug</th>
-                <th className="py-3 px-4">Unggulan</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Aksi</th>
+                <th scope="col" className="py-3 px-4">Judul Proyek</th>
+                <th scope="col" className="py-3 px-4">Slug</th>
+                <th scope="col" className="py-3 px-4">Unggulan</th>
+                <th scope="col" className="py-3 px-4">Status</th>
+                <th scope="col" className="py-3 px-4 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-900 text-zinc-300">
@@ -82,15 +91,7 @@ export default async function PortfolioPage() {
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right space-x-3">
-                      <Link
-                        href={`/admin/portfolio/${item.id}/edit`}
-                        className="text-zinc-400 hover:text-zinc-100 transition"
-                      >
-                        Edit
-                      </Link>
-                      <DeleteProjectButton id={item.id} title={trans?.title || item.slug} />
-                    </td>
+                    <RowActions editHref={`/admin/portfolio/${item.id}/edit`}><DeleteProjectButton id={item.id} title={trans?.title || item.slug} /></RowActions>
                   </tr>
                 );
               })}
@@ -98,6 +99,7 @@ export default async function PortfolioPage() {
           </table>
         </div>
       )}
-    </div>
+    <Pagination page={paging.page} hasNext={rows.length > PAGE_SIZE} />
+</div>
   );
 }

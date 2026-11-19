@@ -1,3 +1,4 @@
+import { roleSchema, type RoleName } from "@/types/domain";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -8,7 +9,7 @@ export interface AuthenticatedUser {
   id: string;
   email: string;
   fullName: string;
-  role: string;
+  role: RoleName;
   mustChangePassword: boolean;
   sessionId: string;
 }
@@ -43,7 +44,7 @@ export const getCurrentUser = cache(async (): Promise<AuthenticatedUser | null> 
     id: session.user.id,
     email: session.user.email,
     fullName: session.user.fullName,
-    role: session.user.role.name,
+    role: roleSchema.parse(session.user.role.name),
     mustChangePassword: session.user.mustChangePassword,
     sessionId: session.id,
   };

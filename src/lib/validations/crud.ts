@@ -12,7 +12,6 @@ export const companyProfileSchema = z.object({
   socialLinks: z.string().optional().or(z.literal("")),
 });
 
-export type CompanyProfileInput = z.infer<typeof companyProfileSchema>;
 
 // ── Service ──
 export const serviceSchema = z.object({
@@ -31,7 +30,6 @@ export const serviceSchema = z.object({
   description: z.string().optional().or(z.literal("")),
 });
 
-export type ServiceInput = z.infer<typeof serviceSchema>;
 
 // ── Project (Portfolio) ──
 export const projectSchema = z.object({
@@ -57,7 +55,6 @@ export const projectSchema = z.object({
   content: z.string().optional().or(z.literal("")),
 });
 
-export type ProjectInput = z.infer<typeof projectSchema>;
 
 // ── Post (Blog) ──
 export const postSchema = z.object({
@@ -75,21 +72,6 @@ export const postSchema = z.object({
   content: z.string().min(1, "Konten artikel wajib diisi"),
 });
 
-export type PostInput = z.infer<typeof postSchema>;
-
-// ── Post Category ──
-export const postCategorySchema = z.object({
-  slug: z
-    .string()
-    .min(1, "Slug wajib diisi")
-    .max(100, "Maksimal 100 karakter")
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug hanya boleh huruf kecil, angka, dan tanda hubung"),
-  sortOrder: z.coerce.number().int().min(0).default(0),
-  // Translation
-  name: z.string().min(1, "Nama kategori wajib diisi").max(100, "Maksimal 100 karakter"),
-});
-
-export type PostCategoryInput = z.infer<typeof postCategorySchema>;
 
 // ── Job Opening (Karir) ──
 export const jobOpeningSchema = z.object({
@@ -114,5 +96,3 @@ export const jobOpeningSchema = z.object({
   requirements: z.string().optional().or(z.literal("")),
   benefits: z.string().optional().or(z.literal("")),
 });
-
-export type JobOpeningInput = z.infer<typeof jobOpeningSchema>;
