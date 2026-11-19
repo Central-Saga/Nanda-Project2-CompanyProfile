@@ -1,8 +1,7 @@
 import { z } from "zod";
 import { LeadStatus, BookingStatus } from "@prisma/client";
 
-export const roleSchema = z.enum(["super_admin", "editor"]);
-export type RoleName = z.infer<typeof roleSchema>;
+export { roleSchema, type RoleName } from "./auth";
 export const leadStatusSchema = z.enum(LeadStatus);
 export const bookingStatusSchema = z.enum(BookingStatus);
 export const statusUpdateSchema = z.object({ status: z.string().max(40) });

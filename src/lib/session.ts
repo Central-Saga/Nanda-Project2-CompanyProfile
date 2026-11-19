@@ -1,5 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
-import { roleSchema, type RoleName } from "@/types/domain";
+import { roleSchema, type RoleName } from "@/types/auth";
 import crypto from "crypto";
 
 export function getSessionSecret(): Uint8Array {
