@@ -14,7 +14,7 @@ const patterns = [
 
 for (const [stage, entry, args] of [
   ["prisma-generate", "prisma/build/index.js", ["generate"]],
-  ["next-build", "next/dist/bin/next", ["build", "--webpack"]],
+  ["next-build", "next/dist/bin/next", ["build"]],
 ]) {
   let output = "";
   const child = spawn(process.execPath, [`node_modules/${entry}`, ...args], { stdio: ["inherit", "pipe", "pipe"] });
