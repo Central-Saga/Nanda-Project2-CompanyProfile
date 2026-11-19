@@ -1,4 +1,5 @@
 const { readFile, rm } = require("node:fs/promises");
+const { spawnSync } = require("node:child_process");
 let stage = "initialization";
 
 module.exports = {
@@ -11,7 +12,16 @@ module.exports = {
   async onEnd({ error, utils }) {
     // Reports are public deploy metadata. Emit fixed labels only, never raw
     // errors, environment values, paths, or build output containing secrets.
-    const message = `${error?.message || ""}\n${error?.stack || ""}\n${error?.cause?.message || ""}`;
+    let runtimeOutput = "";
+    if (error && stage === "adapter-and-bundling") {
+      const probe = spawnSync(".netlify/plugins/deno-cli/deno", [
+        "check", "--cached-only", "--no-config", "--node-modules-dir=false",
+        "--import-map=.netlify/edge-functions-import-map.json",
+        ".netlify/edge-functions/___netlify-edge-handler-node-middleware/___netlify-edge-handler-node-middleware.js",
+      ], { encoding: "utf8", timeout: 20000, maxBuffer: 128000 });
+      runtimeOutput = `${probe.stderr || ""}\n${probe.stdout || ""}`;
+    }
+    const message = `${runtimeOutput}\n${error?.message || ""}\n${error?.stack || ""}\n${error?.cause?.message || ""}`;
     const categories = [
       ["secret-scan", /secret.{0,30}(scan|found|detect)/i],
       ["memory-limit", /out of memory|heap limit|SIGKILL/i],
