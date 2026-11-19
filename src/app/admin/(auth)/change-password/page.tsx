@@ -1,12 +1,15 @@
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { ChangePasswordForm } from "./ChangePasswordForm";
 
 export const metadata = {
   title: "Ganti Password",
 };
 
-export default function ChangePasswordPage() {
+export default async function ChangePasswordPage() {
+  if (!(await getCurrentUser())) redirect("/admin/login");
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md p-8 bg-zinc-950 border border-zinc-800 rounded-lg">
         <div className="mb-6">
           <div className="inline-block px-2 py-0.5 text-xs font-mono bg-amber-950 text-amber-400 border border-amber-800/60 rounded mb-2">
@@ -20,6 +23,6 @@ export default function ChangePasswordPage() {
 
         <ChangePasswordForm />
       </div>
-    </div>
+    </main>
   );
 }

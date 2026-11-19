@@ -6,24 +6,27 @@ import { requireAuth } from "@/lib/auth";
 import { uploadToStorage, deleteFromStorage } from "@/lib/storage";
 import crypto from "crypto";
 
-const ALLOWED_MIME_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/svg+xml",
-  "application/pdf",
-];
+import { MAX_FILE_SIZE, validateMedia, createStorageKey } from "@/lib/media-validation";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+export interface UploadedMedia {
+  id: string;
+  url: string;
+  key: string;
+  originalName: string;
+}
 
-export async function uploadMediaAction(formData: FormData) {
+export type UploadResult =
+  | { success: true; data: UploadedMedia }
+  | { success: false; error: string };
+
+export async function uploadMediaAction(formData: FormData): Promise<UploadResult> {
+  const user = await requireAuth();
   try {
-    const user = await requireAuth();
-    const file = formData.get("file") as File | null;
+    const file = formData.get("file");
     const folder = (formData.get("folder") as string) || "general";
     const altText = (formData.get("altText") as string) || "";
 
-    if (!file || file.size === 0) {
+    if (!(file instanceof File) || file.size === 0) {
       return { success: false, error: "File tidak ditemukan atau kosong." };
     }
 
@@ -34,15 +37,10 @@ export async function uploadMediaAction(formData: FormData) {
       };
     }
 
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      return {
-        success: false,
-        error: `Tipe file ${file.type} tidak didukung. Harap unggah JPEG, PNG, WEBP, SVG, atau PDF.`,
-      };
-    }
-
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+
+    const detected = validateMedia(buffer, file.type);
 
     // Compute SHA-256 Checksum
     const checksumSha256 = crypto
@@ -51,14 +49,13 @@ export async function uploadMediaAction(formData: FormData) {
       .digest("hex");
 
     // Clean filename and make unique key
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const uniqueKey = `${folder}/${Date.now()}-${sanitizedName}`;
+    const uniqueKey = createStorageKey(folder, detected.extension);
 
     // Upload to S3/MinIO
     const { url, key } = await uploadToStorage({
       key: uniqueKey,
       buffer,
-      mimeType: file.type,
+      mimeType: detected.mimeType,
     });
 
     // Save record to MediaFile table
@@ -68,7 +65,7 @@ export async function uploadMediaAction(formData: FormData) {
         storageKey: key,
         url,
         originalName: file.name,
-        mimeType: file.type,
+        mimeType: detected.mimeType,
         sizeBytes: file.size,
         altText: altText || null,
         folder,
@@ -103,18 +100,17 @@ export async function uploadMediaAction(formData: FormData) {
         originalName: media.originalName,
       },
     };
-  } catch (error: any) {
-    console.error("uploadMediaAction error:", error);
+  } catch {
     return {
       success: false,
-      error: error.message || "Gagal mengunggah file ke media storage.",
+      error: "Gagal mengunggah file ke media storage.",
     };
   }
 }
 
 export async function deleteMediaAction(id: string) {
+  const user = await requireAuth();
   try {
-    const user = await requireAuth();
 
     const media = await prisma.mediaFile.findUnique({
       where: { id },
@@ -127,8 +123,8 @@ export async function deleteMediaAction(id: string) {
     // Try deleting from storage
     try {
       await deleteFromStorage(media.storageKey);
-    } catch (s3Error) {
-      console.warn("Storage deletion error (ignored for DB cleanup):", s3Error);
+    } catch {
+      return { success: false, error: "Penyimpanan tidak tersedia. Berkas belum dihapus, silakan coba lagi." };
     }
 
     // Soft delete or hard delete in DB
@@ -152,10 +148,10 @@ export async function deleteMediaAction(id: string) {
 
     revalidatePath("/admin/media");
     return { success: true };
-  } catch (error: any) {
+  } catch {
     return {
       success: false,
-      error: error.message || "Gagal menghapus berkas media.",
+      error: "Gagal menghapus berkas media.",
     };
   }
 }

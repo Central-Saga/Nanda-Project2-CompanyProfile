@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { EmptyState } from "@/components/admin/EmptyState";
@@ -5,6 +6,7 @@ import { MediaUploader } from "./MediaUploader";
 import { DeleteMediaButton } from "./DeleteMediaButton";
 
 export default async function MediaPage() {
+  await requireAuth();
   const mediaList = await prisma.mediaFile.findMany({
     where: { deletedAt: null },
     orderBy: { createdAt: "desc" },

@@ -5,7 +5,9 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { loginSchema, changePasswordSchema } from "@/lib/validations/auth";
 import { createSessionToken, hashToken } from "@/lib/session";
-import { getCurrentUser, requireAuth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/lib/auth";
 
 export interface ActionState {
   success: boolean;
@@ -138,7 +140,8 @@ export async function loginAction(_prevState: ActionState | null, formData: Form
 }
 
 export async function changePasswordAction(_prevState: ActionState | null, formData: FormData): Promise<ActionState> {
-  const user = await requireAuth();
+  const user = await getCurrentUser();
+  if (!user) redirect("/admin/login");
 
   const rawData = {
     currentPassword: formData.get("currentPassword"),
@@ -176,52 +179,31 @@ export async function changePasswordAction(_prevState: ActionState | null, formD
 
   const newHash = await bcrypt.hash(newPassword, 12);
 
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      passwordHash: newHash,
-      mustChangePassword: false,
-      passwordChangedAt: new Date(),
-    },
-  });
-
-  // Refresh token with mustChangePassword = false
-  const newToken = await createSessionToken({
-    userId: user.id,
-    role: user.role,
-    sessionId: user.sessionId,
-    mustChangePassword: false,
-  });
-
-  const hashedToken = hashToken(newToken);
-  await prisma.session.update({
-    where: { id: user.sessionId },
-    data: { tokenHash: hashedToken },
+  // Password update and revocation commit together. Require a fresh login on every device.
+  await prisma.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: user.id },
+      data: { passwordHash: newHash, mustChangePassword: false, passwordChangedAt: new Date() },
+    });
+    await tx.session.updateMany({
+      where: { userId: user.id, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+    await tx.auditLog.create({
+      data: {
+        userId: user.id, action: "UPDATE", entityType: "UserPassword", entityId: user.id,
+        newValues: { action: "password_changed" },
+      },
+    });
   });
 
   const cookieStore = await cookies();
-  cookieStore.set("session_token", newToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 24 * 60 * 60,
-  });
-
-  await prisma.auditLog.create({
-    data: {
-      userId: user.id,
-      action: "UPDATE",
-      entityType: "UserPassword",
-      entityId: user.id,
-      newValues: { action: "password_changed" },
-    },
-  });
-
+  cookieStore.delete("session_token");
+  revalidatePath("/", "layout");
   return {
     success: true,
-    message: "Password berhasil diperbarui",
-    redirectUrl: "/admin/dashboard",
+    message: "Password berhasil diperbarui. Silakan masuk kembali.",
+    redirectUrl: "/admin/login",
   };
 }
 
@@ -237,6 +219,7 @@ export async function logoutAction(): Promise<ActionState> {
   const cookieStore = await cookies();
   cookieStore.delete("session_token");
 
+  revalidatePath("/", "layout");
   return {
     success: true,
     redirectUrl: "/admin/login",

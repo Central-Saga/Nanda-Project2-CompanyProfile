@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ProjectForm } from "../../ProjectForm";
@@ -12,6 +13,7 @@ interface EditProjectPageProps {
 }
 
 export default async function EditProjectPage({ params }: EditProjectPageProps) {
+  await requireAuth();
   const { id } = await params;
 
   const project = await prisma.project.findUnique({

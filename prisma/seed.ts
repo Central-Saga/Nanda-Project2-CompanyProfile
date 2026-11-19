@@ -21,7 +21,7 @@ async function main() {
     },
   });
 
-  const editorRole = await prisma.role.upsert({
+  await prisma.role.upsert({
     where: { name: "editor" },
     update: {},
     create: {
@@ -63,8 +63,11 @@ async function main() {
   }
 
   // 2. Initial Admin User
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
-  const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || "ChangeMe123!";
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_INITIAL_PASSWORD;
+  if (!adminEmail || !adminPassword || adminPassword.length < 12) {
+    throw new Error("Isi ADMIN_EMAIL dan ADMIN_INITIAL_PASSWORD (minimal 12 karakter) sebelum seed.");
+  }
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
   const adminUser = await prisma.user.upsert({
@@ -79,7 +82,7 @@ async function main() {
       isActive: true,
     },
   });
-  console.log(`Admin user ready: ${adminUser.email}`);
+  console.info("Admin user ready.");
 
   // 3. Design Direction (Lampiran B defaults)
   const existingDirection = await prisma.designDirection.findFirst();
@@ -178,8 +181,8 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error("Seed error:", e);
+  .catch(() => {
+    console.error("Seed gagal. Periksa konfigurasi database dan kredensial seed.");
     process.exit(1);
   })
   .finally(async () => {

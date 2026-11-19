@@ -79,6 +79,8 @@ export async function createJobAction(
     },
   });
 
+  revalidatePath("/karier", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/careers");
   return { success: true, message: "Lowongan karir berhasil dibuat", redirectUrl: "/admin/careers" };
 }
@@ -176,6 +178,8 @@ export async function updateJobAction(
     },
   });
 
+  revalidatePath("/karier", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/careers");
   return { success: true, message: "Lowongan karir berhasil diperbarui", redirectUrl: "/admin/careers" };
 }
@@ -200,6 +204,8 @@ export async function deleteJobAction(id: string): Promise<ActionState> {
     },
   });
 
+  revalidatePath("/karier", "layout");
+  revalidatePath("/");
   revalidatePath("/admin/careers");
   return { success: true, message: "Lowongan karir berhasil dihapus" };
 }

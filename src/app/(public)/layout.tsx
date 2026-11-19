@@ -11,7 +11,7 @@ export default function PublicLayout({
   return (
     <div className="min-h-screen flex flex-col bg-black text-zinc-100 font-sans selection:bg-red-950 selection:text-red-200">
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
       <Footer />
     </div>
   );

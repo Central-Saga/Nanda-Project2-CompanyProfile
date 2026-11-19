@@ -1,20 +1,23 @@
 "use client";
 
 import { logoutAction } from "@/app/actions/auth";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function LogoutButton() {
-  const router = useRouter();
+  const [pending, setPending] = useState(false);
 
   async function handleLogout() {
+    if (pending) return;
+    setPending(true);
     const res = await logoutAction();
     if (res.redirectUrl) {
-      router.push(res.redirectUrl);
+      window.location.replace(res.redirectUrl);
     }
   }
 
   return (
     <button
+      disabled={pending}
       onClick={handleLogout}
       className="text-xs font-mono text-zinc-400 hover:text-red-400 transition flex items-center gap-1.5"
     >

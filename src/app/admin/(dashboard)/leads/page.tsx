@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { EmptyState } from "@/components/admin/EmptyState";
@@ -8,6 +9,7 @@ export const metadata = {
 };
 
 export default async function LeadsPage() {
+  await requireAuth();
   const leads = await prisma.lead.findMany({
     include: {
       brief: true,

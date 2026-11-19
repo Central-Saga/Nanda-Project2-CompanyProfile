@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ServiceForm } from "../../ServiceForm";
@@ -12,6 +13,7 @@ interface EditServicePageProps {
 }
 
 export default async function EditServicePage({ params }: EditServicePageProps) {
+  await requireAuth();
   const { id } = await params;
 
   const service = await prisma.service.findUnique({

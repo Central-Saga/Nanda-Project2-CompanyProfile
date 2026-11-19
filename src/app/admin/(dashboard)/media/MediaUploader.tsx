@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import type { UploadedMedia } from "@/app/actions/media";
 import { uploadMediaAction } from "@/app/actions/media";
 
-export function MediaUploader({ onUploaded }: { onUploaded?: (media: any) => void }) {
+export function MediaUploader({ onUploaded }: { onUploaded?: (media: UploadedMedia) => void }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -46,14 +47,14 @@ export function MediaUploader({ onUploaded }: { onUploaded?: (media: any) => voi
             onChange={handleFileChange}
             disabled={loading}
             className="hidden"
-            accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"
+            accept="image/jpeg,image/png,image/webp,application/pdf"
           />
         </label>
       </div>
       {error && <div className="text-xs font-mono text-red-500">{error}</div>}
       {success && <div className="text-xs font-mono text-emerald-400">{success}</div>}
       <div className="text-[11px] text-zinc-600 font-mono">
-        Maksimal 10MB (JPEG, PNG, WEBP, SVG, PDF)
+        Maksimal 10MB (JPEG, PNG, WEBP, PDF)
       </div>
     </div>
   );
