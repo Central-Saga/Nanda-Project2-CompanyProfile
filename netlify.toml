@@ -1,14 +1,11 @@
 [build]
-  command = "node scripts/netlify-build.mjs"
+  command = "npx prisma generate && npm run build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "22.23.4"
   NPM_FLAGS = "--include=dev"
   SECRETS_SCAN_OMIT_KEYS = "NODE_ENV"
-
-[[plugins]]
-  package = "./netlify/plugins/build-diagnostics"
 
 [context.production.environment]
   TRUST_PROXY = "netlify"
