@@ -1,4 +1,7 @@
 "use server";
+import { projectFields, projectTranslation } from "@/lib/content-data";
+import { validationFailure } from "@/lib/validation-result";
+import { readProjectForm } from "@/lib/form-data";
 
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
@@ -12,27 +15,9 @@ export async function createProjectAction(
 ): Promise<ActionState> {
   const user = await requireAuth();
 
-  const rawData = {
-    slug: formData.get("slug"),
-    projectUrl: formData.get("projectUrl"),
-    startedAt: formData.get("startedAt"),
-    completedAt: formData.get("completedAt"),
-    durationMonths: formData.get("durationMonths") || "",
-    teamSize: formData.get("teamSize") || "",
-    isFeatured: formData.get("isFeatured") === "on",
-    isPublished: formData.get("isPublished") === "on",
-    sortOrder: formData.get("sortOrder"),
-    title: formData.get("title"),
-    summary: formData.get("summary"),
-    challenge: formData.get("challenge"),
-    solution: formData.get("solution"),
-    result: formData.get("result"),
-    content: formData.get("content"),
-  };
-
-  const parsed = projectSchema.safeParse(rawData);
+  const parsed = projectSchema.safeParse(readProjectForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -44,24 +29,11 @@ export async function createProjectAction(
 
   const project = await prisma.project.create({
     data: {
-      slug: data.slug,
-      projectUrl: data.projectUrl || null,
-      startedAt: data.startedAt ? new Date(data.startedAt) : null,
-      completedAt: data.completedAt ? new Date(data.completedAt) : null,
-      durationMonths: data.durationMonths ? Number(data.durationMonths) : null,
-      teamSize: data.teamSize ? Number(data.teamSize) : null,
-      isFeatured: data.isFeatured,
-      isPublished: data.isPublished,
-      sortOrder: data.sortOrder,
+      ...projectFields(data),
       translations: {
         create: {
           locale: "id",
-          title: data.title,
-          summary: data.summary || null,
-          challenge: data.challenge || null,
-          solution: data.solution || null,
-          result: data.result || null,
-          content: data.content || null,
+          ...projectTranslation(data),
         },
       },
     },
@@ -92,27 +64,9 @@ export async function updateProjectAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID proyek tidak ditemukan" };
 
-  const rawData = {
-    slug: formData.get("slug"),
-    projectUrl: formData.get("projectUrl"),
-    startedAt: formData.get("startedAt"),
-    completedAt: formData.get("completedAt"),
-    durationMonths: formData.get("durationMonths") || "",
-    teamSize: formData.get("teamSize") || "",
-    isFeatured: formData.get("isFeatured") === "on",
-    isPublished: formData.get("isPublished") === "on",
-    sortOrder: formData.get("sortOrder"),
-    title: formData.get("title"),
-    summary: formData.get("summary"),
-    challenge: formData.get("challenge"),
-    solution: formData.get("solution"),
-    result: formData.get("result"),
-    content: formData.get("content"),
-  };
-
-  const parsed = projectSchema.safeParse(rawData);
+  const parsed = projectSchema.safeParse(readProjectForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -132,34 +86,16 @@ export async function updateProjectAction(
   await prisma.project.update({
     where: { id },
     data: {
-      slug: data.slug,
-      projectUrl: data.projectUrl || null,
-      startedAt: data.startedAt ? new Date(data.startedAt) : null,
-      completedAt: data.completedAt ? new Date(data.completedAt) : null,
-      durationMonths: data.durationMonths ? Number(data.durationMonths) : null,
-      teamSize: data.teamSize ? Number(data.teamSize) : null,
-      isFeatured: data.isFeatured,
-      isPublished: data.isPublished,
-      sortOrder: data.sortOrder,
+      ...projectFields(data),
       translations: {
         upsert: {
           where: { projectId_locale: { projectId: id, locale: "id" } },
           create: {
             locale: "id",
-            title: data.title,
-            summary: data.summary || null,
-            challenge: data.challenge || null,
-            solution: data.solution || null,
-            result: data.result || null,
-            content: data.content || null,
+          ...projectTranslation(data),
           },
           update: {
-            title: data.title,
-            summary: data.summary || null,
-            challenge: data.challenge || null,
-            solution: data.solution || null,
-            result: data.result || null,
-            content: data.content || null,
+          ...projectTranslation(data),
           },
         },
       },

@@ -1,8 +1,7 @@
+import { pageMetadata } from "@/lib/seo";
 import { BriefForm } from "./BriefForm";
 
-export const metadata = {
-  title: "Mulai Proyek - Kirim Brief Teknis",
-};
+export const metadata = pageMetadata('Mulai Proyek - Kirim Brief Teknis', '/mulai-proyek');
 
 export default function StartProjectPage() {
   return (

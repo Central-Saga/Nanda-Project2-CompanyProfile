@@ -1,15 +1,21 @@
+import { AdminTable, PageHeader, EmptyState } from "@/components/admin";
+import { formatDateTime } from "@/lib/format";
+import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
+import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
-import { EmptyState } from "@/components/admin/EmptyState";
 
-export default async function AuditLogsPage() {
+export default async function AuditLogsPage({ searchParams }: { searchParams: PageSearchParams }) {
   await requireAuth();
-  const logs = await prisma.auditLog.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 100,
+  const paging = await readPage(searchParams);
+  const rows = await prisma.auditLog.findMany({
+    skip: paging.skip,
+    take: paging.take,
+    orderBy: [{ createdAt: "desc" }, { id: "asc" }],
     include: { user: true },
   });
+
+  const logs = rows.slice(0, PAGE_SIZE);
 
   return (
     <div className="space-y-6">
@@ -18,7 +24,7 @@ export default async function AuditLogsPage() {
         description="Transparansi dan ketertelusuran mutlak terhadap seluruh aktivitas perubahan data internal."
       />
 
-      <div className="bg-zinc-950 border border-zinc-900 rounded-lg overflow-hidden">
+      <div className="bg-zinc-950 border border-zinc-900 rounded-lg overflow-x-auto">
         {logs.length === 0 ? (
           <EmptyState
             title="Belum ada catatan log"
@@ -26,22 +32,11 @@ export default async function AuditLogsPage() {
           />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-zinc-900/50 text-zinc-400 border-b border-zinc-800 uppercase text-[11px] tracking-wider">
-                <tr>
-                  <th className="py-3 px-4">Waktu</th>
-                  <th className="py-3 px-4">Pelaku</th>
-                  <th className="py-3 px-4">Aksi</th>
-                  <th className="py-3 px-4">Entitas</th>
-                  <th className="py-3 px-4">ID Entitas</th>
-                  <th className="py-3 px-4">Data</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-900 text-zinc-300">
+            <AdminTable caption="Audit Logs" headers={["Waktu", "Pelaku", "Aksi", "Entitas", "ID Entitas", "Data"]}>
                 {logs.map((log) => (
                   <tr key={log.id} className="hover:bg-zinc-900/30">
                     <td className="py-3 px-4 text-zinc-500 whitespace-nowrap">
-                      {new Date(log.createdAt).toLocaleString("id-ID")}
+                      {formatDateTime(log.createdAt)}
                     </td>
                     <td className="py-3 px-4">
                       {log.user?.fullName || log.user?.email || "Sistem"}
@@ -62,11 +57,11 @@ export default async function AuditLogsPage() {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
+              </AdminTable>
           </div>
         )}
       </div>
-    </div>
+    <Pagination page={paging.page} hasNext={rows.length > PAGE_SIZE} />
+</div>
   );
 }

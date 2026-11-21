@@ -1,4 +1,6 @@
 "use server";
+import { validationFailure } from "@/lib/validation-result";
+import { readPostForm } from "@/lib/form-data";
 
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
@@ -12,19 +14,9 @@ export async function createPostAction(
 ): Promise<ActionState> {
   const user = await requireAuth();
 
-  const rawData = {
-    slug: formData.get("slug"),
-    categoryId: formData.get("categoryId") || "",
-    status: formData.get("status") || "draft",
-    isFeatured: formData.get("isFeatured") === "on",
-    title: formData.get("title"),
-    excerpt: formData.get("excerpt"),
-    content: formData.get("content"),
-  };
-
-  const parsed = postSchema.safeParse(rawData);
+  const parsed = postSchema.safeParse(readPostForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -78,19 +70,9 @@ export async function updatePostAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID artikel tidak ditemukan" };
 
-  const rawData = {
-    slug: formData.get("slug"),
-    categoryId: formData.get("categoryId") || "",
-    status: formData.get("status") || "draft",
-    isFeatured: formData.get("isFeatured") === "on",
-    title: formData.get("title"),
-    excerpt: formData.get("excerpt"),
-    content: formData.get("content"),
-  };
-
-  const parsed = postSchema.safeParse(rawData);
+  const parsed = postSchema.safeParse(readPostForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;

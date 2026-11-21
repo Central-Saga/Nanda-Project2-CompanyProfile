@@ -1,4 +1,6 @@
 "use server";
+import { validationFailure } from "@/lib/validation-result";
+import { readServiceForm } from "@/lib/form-data";
 
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
@@ -12,20 +14,9 @@ export async function createServiceAction(
 ): Promise<ActionState> {
   const user = await requireAuth();
 
-  const rawData = {
-    slug: formData.get("slug"),
-    icon: formData.get("icon"),
-    sortOrder: formData.get("sortOrder"),
-    isPublished: formData.get("isPublished") === "on",
-    name: formData.get("name"),
-    tagline: formData.get("tagline"),
-    summary: formData.get("summary"),
-    description: formData.get("description"),
-  };
-
-  const parsed = serviceSchema.safeParse(rawData);
+  const parsed = serviceSchema.safeParse(readServiceForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -78,20 +69,9 @@ export async function updateServiceAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID layanan tidak ditemukan" };
 
-  const rawData = {
-    slug: formData.get("slug"),
-    icon: formData.get("icon"),
-    sortOrder: formData.get("sortOrder"),
-    isPublished: formData.get("isPublished") === "on",
-    name: formData.get("name"),
-    tagline: formData.get("tagline"),
-    summary: formData.get("summary"),
-    description: formData.get("description"),
-  };
-
-  const parsed = serviceSchema.safeParse(rawData);
+  const parsed = serviceSchema.safeParse(readServiceForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;

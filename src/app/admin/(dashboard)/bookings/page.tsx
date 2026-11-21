@@ -1,21 +1,28 @@
+import { AdminTable, PageHeader, EmptyState } from "@/components/admin";
+import { formatDate } from "@/lib/format";
+import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
+import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
-import { EmptyState } from "@/components/admin/EmptyState";
 import { BookingStatusSelector } from "./BookingStatusSelector";
 
 export const metadata = {
   title: "Konsultasi Terjadwal",
 };
 
-export default async function BookingsPage() {
+export default async function BookingsPage({ searchParams }: { searchParams: PageSearchParams }) {
   await requireAuth();
-  const bookings = await prisma.consultationBooking.findMany({
+  const paging = await readPage(searchParams);
+  const rows = await prisma.consultationBooking.findMany({
+    skip: paging.skip,
+    take: paging.take,
     include: {
       lead: true,
     },
-    orderBy: { preferredDate: "desc" },
+    orderBy: [{ preferredDate: "desc" }, { id: "asc" }],
   });
+
+  const bookings = rows.slice(0, PAGE_SIZE);
 
   return (
     <div>
@@ -30,19 +37,8 @@ export default async function BookingsPage() {
           description="Klien dapat menjadwalkan sesi konsultasi arsitektur melalui portal publik."
         />
       ) : (
-        <div className="border border-zinc-900 rounded-lg overflow-hidden bg-zinc-950">
-          <table className="w-full text-left text-xs font-mono">
-            <thead className="bg-zinc-900/60 text-zinc-400 uppercase tracking-wider border-b border-zinc-900">
-              <tr>
-                <th className="py-3 px-4">Nama Klien</th>
-                <th className="py-3 px-4">Kontak</th>
-                <th className="py-3 px-4">Tanggal Diajukan</th>
-                <th className="py-3 px-4">Slot Waktu</th>
-                <th className="py-3 px-4">Topik</th>
-                <th className="py-3 px-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-900 text-zinc-300">
+        <div className="border border-zinc-900 rounded-lg overflow-x-auto bg-zinc-950">
+          <AdminTable caption="Bookings" headers={["Nama Klien", "Kontak", "Tanggal Diajukan", "Slot Waktu", "Topik", "Status"]}>
               {bookings.map((booking) => (
                 <tr key={booking.id} className="hover:bg-zinc-900/30 transition">
                   <td className="py-3 px-4 font-medium text-zinc-100 font-sans">
@@ -55,7 +51,7 @@ export default async function BookingsPage() {
                     )}
                   </td>
                   <td className="py-3 px-4 text-zinc-300">
-                    {booking.preferredDate.toISOString().split("T")[0]}
+                    {formatDate(booking.preferredDate)}
                   </td>
                   <td className="py-3 px-4 text-zinc-400 font-bold">
                     {booking.preferredTimeSlot}
@@ -71,10 +67,10 @@ export default async function BookingsPage() {
                   </td>
                 </tr>
               ))}
-            </tbody>
-          </table>
+            </AdminTable>
         </div>
       )}
-    </div>
+    <Pagination page={paging.page} hasNext={rows.length > PAGE_SIZE} />
+</div>
   );
 }

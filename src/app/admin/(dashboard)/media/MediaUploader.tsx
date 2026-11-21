@@ -1,61 +1,34 @@
 "use client";
-
-import { useState } from "react";
-import type { UploadedMedia } from "@/app/actions/media";
-import { uploadMediaAction } from "@/app/actions/media";
-
-export function MediaUploader({ onUploaded }: { onUploaded?: (media: UploadedMedia) => void }) {
+import { useRef, useState } from "react";
+import { uploadMediaAction, type UploadedMedia } from "@/app/actions/media";
+import { Input } from "@/components/shared/ui/Input";
+import { Button } from "@/components/shared/ui/Button";
+export interface MediaUploaderProps { onUploaded?: (media: UploadedMedia) => void; }
+export function MediaUploader({ onUploaded }: MediaUploaderProps) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder", "uploads");
-
-    const res = await uploadMediaAction(formData);
-    setLoading(false);
-
-    if (!res.success) {
-      setError(res.error || "Gagal mengunggah file");
-    } else {
-      setSuccess(`File "${file.name}" berhasil diunggah.`);
-      if (onUploaded) {
-        onUploaded(res.data);
-      }
-    }
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const selected = useRef<File | null>(null);
+  const inProgress = useRef(false);
+  async function upload(file: File) {
+    if (inProgress.current) return;
+    selected.current = file;
+    if (file.size > 10 * 1024 * 1024) { setError("Ukuran file melebihi 10MB."); return; }
+    inProgress.current = true; setLoading(true); setError(""); setSuccess("");
+    try {
+      const data = new FormData(); data.set("file", file); data.set("folder", "uploads");
+      const result = await uploadMediaAction(data);
+      if (!result.success) { setError(result.error); return; }
+      setSuccess(`File "${file.name}" berhasil diunggah.`); onUploaded?.(result.data);
+    } catch { setError("Layanan belum tersedia. Periksa koneksi dan coba lagi."); }
+    finally { inProgress.current = false; setLoading(false); }
   }
-
-  return (
-    <div className="p-4 rounded-lg border border-dashed border-zinc-800 bg-zinc-950 text-center space-y-3">
-      <div className="text-xs font-mono text-zinc-400">
-        Unggah Dokumen / Gambar ke S3-Compatible Storage
-      </div>
-      <div className="flex flex-col items-center justify-center">
-        <label className="cursor-pointer px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-mono text-zinc-200 uppercase tracking-wider rounded transition-colors">
-          {loading ? "Sedang Mengunggah..." : "Pilih Berkas"}
-          <input
-            type="file"
-            onChange={handleFileChange}
-            disabled={loading}
-            className="hidden"
-            accept="image/jpeg,image/png,image/webp,application/pdf"
-          />
-        </label>
-      </div>
-      {error && <div className="text-xs font-mono text-red-500">{error}</div>}
-      {success && <div className="text-xs font-mono text-emerald-400">{success}</div>}
-      <div className="text-[11px] text-zinc-600 font-mono">
-        Maksimal 10MB (JPEG, PNG, WEBP, PDF)
-      </div>
-    </div>
-  );
+  return <div className="space-y-3 rounded-lg border border-dashed border-zinc-700 bg-zinc-950 p-4">
+    <label htmlFor="media-file" className="block text-sm">Pilih berkas gambar atau PDF</label>
+    <Input id="media-file" type="file" disabled={loading} aria-describedby="media-hint" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload(file); }} />
+    <p id="media-hint" className="text-xs text-zinc-400">Maksimal 10MB: JPEG, PNG, WEBP, PDF. Unduhan memerlukan sesi admin.</p>
+    {loading && <p role="status">Sedang mengunggah…</p>}
+    {error && <p role="alert" className="text-sm text-red-300">{error} <Button disabled={loading} onClick={() => { if (selected.current) void upload(selected.current); }}>Coba lagi</Button></p>}
+    {success && <p role="status" className="text-sm text-green-300">{success}</p>}
+  </div>;
 }

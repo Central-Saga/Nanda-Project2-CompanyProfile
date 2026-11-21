@@ -1,22 +1,19 @@
 "use client";
+import { Input } from "@/components/shared/ui/Input";
 
-import { useActionState } from "react";
+import { Button } from "@/components/shared/ui/Button";
+
+import { SmartForm } from "@/components/shared/SmartForm";
+
+import { useContentForm } from "@/lib/use-content-form";
 import { changePasswordAction } from "@/app/actions/auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export function ChangePasswordForm() {
-  const [state, formAction, isPending] = useActionState(changePasswordAction, null);
-  const router = useRouter();
+  const { state, formAction, isPending } = useContentForm(changePasswordAction);
 
-  useEffect(() => {
-    if (state?.success && state?.redirectUrl) {
-      router.push(state.redirectUrl);
-    }
-  }, [state, router]);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <SmartForm action={formAction} pending={isPending} success={state?.success} className="space-y-4">
       {state?.message && !state?.success && (
         <div className="p-3 bg-red-950/50 border border-red-700/50 text-red-300 text-sm rounded">
           {state.message}
@@ -36,7 +33,7 @@ export function ChangePasswordForm() {
         >
           Password Saat Ini
         </label>
-        <input
+        <Input
           id="currentPassword"
           name="currentPassword"
           type="password"
@@ -56,7 +53,7 @@ export function ChangePasswordForm() {
         >
           Password Baru
         </label>
-        <input
+        <Input
           id="newPassword"
           name="newPassword"
           type="password"
@@ -77,7 +74,7 @@ export function ChangePasswordForm() {
         >
           Konfirmasi Password Baru
         </label>
-        <input
+        <Input
           id="confirmPassword"
           name="confirmPassword"
           type="password"
@@ -90,13 +87,13 @@ export function ChangePasswordForm() {
         )}
       </div>
 
-      <button
+      <Button
         type="submit"
         disabled={isPending}
         className="w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-medium text-sm rounded transition focus:outline-none focus:ring-2 focus:ring-red-500"
       >
         {isPending ? "Menyimpan..." : "Perbarui Password"}
-      </button>
-    </form>
+      </Button>
+    </SmartForm>
   );
 }

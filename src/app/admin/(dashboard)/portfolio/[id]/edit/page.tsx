@@ -1,6 +1,7 @@
+import { PageHeader } from "@/components/admin";
+import { dateInput } from "@/lib/format";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
 import { ProjectForm } from "../../ProjectForm";
 import { notFound } from "next/navigation";
 
@@ -8,7 +9,7 @@ export const metadata = {
   title: "Edit Portofolio",
 };
 
-interface EditProjectPageProps {
+export interface EditProjectPageProps {
   params: Promise<{ id: string }>;
 }
 
@@ -33,8 +34,8 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
     id: project.id,
     slug: project.slug,
     projectUrl: project.projectUrl,
-    startedAt: project.startedAt ? project.startedAt.toISOString().split("T")[0] : null,
-    completedAt: project.completedAt ? project.completedAt.toISOString().split("T")[0] : null,
+    startedAt: project.startedAt ? dateInput(project.startedAt) : null,
+    completedAt: project.completedAt ? dateInput(project.completedAt) : null,
     durationMonths: project.durationMonths,
     teamSize: project.teamSize,
     isFeatured: project.isFeatured,

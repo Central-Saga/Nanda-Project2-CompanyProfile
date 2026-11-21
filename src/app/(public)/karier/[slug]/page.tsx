@@ -1,21 +1,20 @@
+import { publicTranslations } from "@/lib/translations";
+import { pageMetadata } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-interface Props {
-  params: Promise<{ slug: string }>;
-}
+import type { SlugPageProps as Props } from "@/types/routes";
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const job = await prisma.jobOpening.findUnique({
     where: { slug },
-    include: { translations: { where: { locale: "id" } } },
+    include: { translations: await publicTranslations() },
   });
 
-  return {
-    title: job?.translations[0]?.title || slug,
-  };
+  if (!job || job.status !== "open") notFound();
+  return pageMetadata(job?.translations[0]?.title || slug, `/karier/${encodeURIComponent(slug)}`);
 }
 
 export default async function JobDetailPage({ params }: Props) {
@@ -23,7 +22,7 @@ export default async function JobDetailPage({ params }: Props) {
   const job = await prisma.jobOpening.findUnique({
     where: { slug },
     include: {
-      translations: { where: { locale: "id" } },
+      translations: await publicTranslations(),
     },
   });
 

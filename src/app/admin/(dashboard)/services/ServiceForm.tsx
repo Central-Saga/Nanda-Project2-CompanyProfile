@@ -1,13 +1,15 @@
 "use client";
+import { Input } from "@/components/shared/ui/Input";
 
-import { useActionState, useEffect } from "react";
+import { ContentFormShell } from "@/components/admin/ContentFormShell";
+import { useContentForm } from "@/lib/use-content-form";
+
 import { createServiceAction, updateServiceAction } from "@/app/actions/service";
 import { FormField } from "@/components/admin/FormField";
 import { SubmitButton } from "@/components/admin/SubmitButton";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-interface ServiceFormProps {
+export interface ServiceFormProps {
   initialData?: {
     id: string;
     slug: string;
@@ -24,24 +26,12 @@ interface ServiceFormProps {
 export function ServiceForm({ initialData }: ServiceFormProps) {
   const isEditing = Boolean(initialData);
   const action = isEditing ? updateServiceAction : createServiceAction;
-  const [state, formAction, isPending] = useActionState(action, null);
-  const router = useRouter();
+  const { state, formAction, isPending } = useContentForm(action);
 
-  useEffect(() => {
-    if (state?.success && state?.redirectUrl) {
-      router.push(state.redirectUrl);
-    }
-  }, [state, router]);
 
   return (
-    <form action={formAction} className="space-y-6 max-w-2xl">
-      {isEditing && <input type="hidden" name="id" value={initialData!.id} />}
+    <ContentFormShell action={formAction} pending={isPending} state={state} id={initialData?.id} className="space-y-6 max-w-2xl">
 
-      {state?.message && !state?.success && (
-        <div className="p-3 bg-red-950/50 border border-red-700/50 text-red-300 text-sm rounded font-mono">
-          {state.message}
-        </div>
-      )}
 
       <div className="p-5 bg-zinc-950 border border-zinc-900 rounded-lg space-y-4">
         <h2 className="text-sm font-bold font-mono uppercase tracking-wider text-zinc-300">
@@ -117,7 +107,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
 
           <div className="flex items-center pt-6">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input
+              <Input
                 type="checkbox"
                 name="isPublished"
                 defaultChecked={initialData ? initialData.isPublished : false}
@@ -143,6 +133,6 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
           Batal
         </Link>
       </div>
-    </form>
+    </ContentFormShell>
   );
 }

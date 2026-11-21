@@ -1,11 +1,12 @@
 "use client";
+import { SmartForm } from "@/components/shared/SmartForm";
 
 import { useActionState } from "react";
 import { updateCompanyProfileAction } from "@/app/actions/company";
 import { FormField } from "@/components/admin/FormField";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 
-interface CompanyProfileFormProps {
+export interface CompanyProfileFormProps {
   initialData: {
     companyName: string;
     tagline?: string | null;
@@ -22,7 +23,7 @@ export function CompanyProfileForm({ initialData }: CompanyProfileFormProps) {
   const [state, formAction, isPending] = useActionState(updateCompanyProfileAction, null);
 
   return (
-    <form action={formAction} className="space-y-6 max-w-2xl">
+    <SmartForm action={formAction} pending={isPending} success={state?.success} className="space-y-6 max-w-2xl">
       {state?.message && (
         <div
           className={`p-3 rounded text-sm font-mono border ${
@@ -120,6 +121,6 @@ export function CompanyProfileForm({ initialData }: CompanyProfileFormProps) {
       <div>
         <SubmitButton pending={isPending} label="Simpan Perubahan" />
       </div>
-    </form>
+    </SmartForm>
   );
 }

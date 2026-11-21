@@ -1,3 +1,4 @@
+import { Input } from "@/components/shared/ui/Input";
 export interface FormFieldProps {
   label: string;
   name: string;
@@ -33,7 +34,7 @@ export function FormField({
         htmlFor={name}
       >
         {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
+        {required && <span aria-hidden="true" className="text-red-500 ml-0.5">*</span>}
       </label>
       {hint && <p id={`${name}-hint`} className="text-[11px] text-zinc-500 mb-1">{hint}</p>}
       {multiline ? (
@@ -49,7 +50,7 @@ export function FormField({
           className={inputClass}
         />
       ) : (
-        <input
+        <Input
           aria-invalid={!!errors?.length}
           aria-describedby={[hint && `${name}-hint`, errors?.length && `${name}-errors`].filter(Boolean).join(" ") || undefined}
           id={name}

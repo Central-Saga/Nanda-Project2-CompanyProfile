@@ -25,6 +25,3 @@ export const changePasswordSchema = z
     message: "Konfirmasi password tidak cocok",
     path: ["confirmPassword"],
   });
-
-export type LoginInput = z.infer<typeof loginSchema>;
-export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

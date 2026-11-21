@@ -7,7 +7,7 @@ import { proxy } from "../src/proxy";
 import { validateMedia, createStorageKey } from "../src/lib/media-validation";
 
 process.env.AUTH_SECRET = "test-only-secret-with-more-than-32-characters";
-const identity = { userId: "user-a", sessionId: "session-a", role: "editor" };
+const identity = { userId: "user-a", sessionId: "session-a", role: "editor" as const };
 
 test("session tokens round trip and cannot be tampered with", async () => {
   const token = await createSessionToken(identity);

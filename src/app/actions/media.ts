@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth";
 import { uploadToStorage, deleteFromStorage } from "@/lib/storage";
 import crypto from "crypto";
 
-import { MAX_FILE_SIZE, validateMedia, createStorageKey } from "@/lib/media-validation";
+import { MAX_FILE_SIZE, validateMediaContents, createStorageKey } from "@/lib/media-validation";
 
 export interface UploadedMedia {
   id: string;
@@ -38,9 +38,11 @@ export async function uploadMediaAction(formData: FormData): Promise<UploadResul
     }
 
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const rawBuffer = Buffer.from(arrayBuffer);
 
-    const detected = validateMedia(buffer, file.type);
+    const detected = await validateMediaContents(rawBuffer, file.type);
+    const buffer = detected.buffer;
+    const mediaId = crypto.randomUUID();
 
     // Compute SHA-256 Checksum
     const checksumSha256 = crypto
@@ -52,7 +54,7 @@ export async function uploadMediaAction(formData: FormData): Promise<UploadResul
     const uniqueKey = createStorageKey(folder, detected.extension);
 
     // Upload to S3/MinIO
-    const { url, key } = await uploadToStorage({
+    const { key } = await uploadToStorage({
       key: uniqueKey,
       buffer,
       mimeType: detected.mimeType,
@@ -61,16 +63,17 @@ export async function uploadMediaAction(formData: FormData): Promise<UploadResul
     // Save record to MediaFile table
     const media = await prisma.mediaFile.create({
       data: {
+        id: mediaId,
         uploadedBy: user.id,
         storageKey: key,
-        url,
+        url: `/api/v1/media/${mediaId}/download`,
         originalName: file.name,
         mimeType: detected.mimeType,
-        sizeBytes: file.size,
+        sizeBytes: buffer.length,
         altText: altText || null,
         folder,
         checksumSha256,
-        isPublic: true,
+        isPublic: false,
       },
     });
 
@@ -84,7 +87,7 @@ export async function uploadMediaAction(formData: FormData): Promise<UploadResul
         newValues: {
           originalName: file.name,
           key,
-          sizeBytes: file.size,
+          sizeBytes: buffer.length,
         },
       },
     });

@@ -4,4 +4,17 @@
 
 [build.environment]
   NODE_VERSION = "22.23.4"
+  NPM_FLAGS = "--include=dev"
   SECRETS_SCAN_OMIT_KEYS = "NODE_ENV"
+
+[context.production.environment]
+  TRUST_PROXY = "netlify"
+  DEPLOYMENT_ENV = "production"
+
+[context.deploy-preview.environment]
+  TRUST_PROXY = "netlify"
+  DEPLOYMENT_ENV = "preview"
+
+[context.branch-deploy.environment]
+  TRUST_PROXY = "netlify"
+  DEPLOYMENT_ENV = "staging"

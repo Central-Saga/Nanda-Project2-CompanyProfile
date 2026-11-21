@@ -1,4 +1,7 @@
 "use server";
+import { jobFields, jobTranslation } from "@/lib/content-data";
+import { validationFailure } from "@/lib/validation-result";
+import { readJobForm } from "@/lib/form-data";
 
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
@@ -12,27 +15,9 @@ export async function createJobAction(
 ): Promise<ActionState> {
   const user = await requireAuth();
 
-  const rawData = {
-    slug: formData.get("slug"),
-    department: formData.get("department"),
-    employmentType: formData.get("employmentType") || "full_time",
-    workMode: formData.get("workMode") || "onsite",
-    location: formData.get("location"),
-    salaryMin: formData.get("salaryMin") || "",
-    salaryMax: formData.get("salaryMax") || "",
-    showSalary: formData.get("showSalary") === "on",
-    status: formData.get("status") || "draft",
-    closesAt: formData.get("closesAt") || "",
-    title: formData.get("title"),
-    description: formData.get("description"),
-    responsibilities: formData.get("responsibilities"),
-    requirements: formData.get("requirements"),
-    benefits: formData.get("benefits"),
-  };
-
-  const parsed = jobOpeningSchema.safeParse(rawData);
+  const parsed = jobOpeningSchema.safeParse(readJobForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -44,26 +29,13 @@ export async function createJobAction(
 
   const job = await prisma.jobOpening.create({
     data: {
-      slug: data.slug,
-      department: data.department || null,
-      employmentType: data.employmentType,
-      workMode: data.workMode,
-      location: data.location || null,
-      salaryMin: data.salaryMin ? Number(data.salaryMin) : null,
-      salaryMax: data.salaryMax ? Number(data.salaryMax) : null,
-      showSalary: data.showSalary,
-      status: data.status,
-      closesAt: data.closesAt ? new Date(data.closesAt) : null,
+      ...jobFields(data),
       openedAt: data.status === "open" ? new Date() : null,
       createdBy: user.id,
       translations: {
         create: {
           locale: "id",
-          title: data.title,
-          description: data.description || null,
-          responsibilities: data.responsibilities || null,
-          requirements: data.requirements || null,
-          benefits: data.benefits || null,
+          ...jobTranslation(data),
         },
       },
     },
@@ -94,27 +66,9 @@ export async function updateJobAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID lowongan tidak ditemukan" };
 
-  const rawData = {
-    slug: formData.get("slug"),
-    department: formData.get("department"),
-    employmentType: formData.get("employmentType") || "full_time",
-    workMode: formData.get("workMode") || "onsite",
-    location: formData.get("location"),
-    salaryMin: formData.get("salaryMin") || "",
-    salaryMax: formData.get("salaryMax") || "",
-    showSalary: formData.get("showSalary") === "on",
-    status: formData.get("status") || "draft",
-    closesAt: formData.get("closesAt") || "",
-    title: formData.get("title"),
-    description: formData.get("description"),
-    responsibilities: formData.get("responsibilities"),
-    requirements: formData.get("requirements"),
-    benefits: formData.get("benefits"),
-  };
-
-  const parsed = jobOpeningSchema.safeParse(rawData);
+  const parsed = jobOpeningSchema.safeParse(readJobForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -134,34 +88,17 @@ export async function updateJobAction(
   await prisma.jobOpening.update({
     where: { id },
     data: {
-      slug: data.slug,
-      department: data.department || null,
-      employmentType: data.employmentType,
-      workMode: data.workMode,
-      location: data.location || null,
-      salaryMin: data.salaryMin ? Number(data.salaryMin) : null,
-      salaryMax: data.salaryMax ? Number(data.salaryMax) : null,
-      showSalary: data.showSalary,
-      status: data.status,
-      closesAt: data.closesAt ? new Date(data.closesAt) : null,
+      ...jobFields(data),
       openedAt: data.status === "open" && !existing.openedAt ? new Date() : existing.openedAt,
       translations: {
         upsert: {
           where: { jobId_locale: { jobId: id, locale: "id" } },
           create: {
             locale: "id",
-            title: data.title,
-            description: data.description || null,
-            responsibilities: data.responsibilities || null,
-            requirements: data.requirements || null,
-            benefits: data.benefits || null,
+          ...jobTranslation(data),
           },
           update: {
-            title: data.title,
-            description: data.description || null,
-            responsibilities: data.responsibilities || null,
-            requirements: data.requirements || null,
-            benefits: data.benefits || null,
+          ...jobTranslation(data),
           },
         },
       },

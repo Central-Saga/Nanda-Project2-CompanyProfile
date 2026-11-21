@@ -8,23 +8,114 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci-test-only
+          POSTGRES_DB: compro_audit
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U ci -d compro_audit" --health-interval 5s --health-timeout 5s --health-retries 10
     env:
-      DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/compro
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      DATABASE_URL: postgresql://ci:ci-test-only@127.0.0.1:5432/compro_audit
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3100
+      RELEASE_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Ephemeral session secret
+        run: echo "AUTH_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
       - run: npm ci
-      - run: npx prisma generate
+      - run: npx prisma generate && npx prisma migrate deploy
+      - run: npm run test:seed
       - run: npm run lint
       - run: npm run typecheck
-      - run: npm test
+      - run: npm run codegen:check
+      - run: npm run audit:types && npm run audit:imports && npm run audit:unused && npm run audit:duplicates
+      - run: npm test && npm run test:coverage
       - uses: actions/cache@v4
         with:
           path: .next/cache
           key: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
           restore-keys: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
       - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Start production server
+        run: |
+          npm start -- --hostname 127.0.0.1 --port 3100 > /tmp/compro-server.log 2>&1 &
+          node --input-type=module -e 'for(let i=0;i<30;i++){try{const r=await fetch("http://127.0.0.1:3100/api/health");if(r.ok)process.exit(0)}catch{}await new Promise(r=>setTimeout(r,1000))}process.exit(1)'
+      - run: npm run audit:bundle
+      - run: npm run test:e2e
+      - name: Lighthouse gate
+        run: |
+          export CHROME_PATH="$(find "$HOME/.cache/ms-playwright" -path '*/chrome-linux64/chrome' -print -quit)"
+          npm run audit:lighthouse
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-${{ github.sha }}
+          path: |
+            coverage/
+            playwright-report/
+            test-results/
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        with:
+          name: standalone-${{ github.sha }}
+          include-hidden-files: true
+          path: |
+            .next/standalone/
+            .next/static/
+            public/
+            !.next/standalone/**/.env*
+          retention-days: 14
+  containers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ephemeral container credentials
+        run: |
+          echo "POSTGRES_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+          echo "AUTH_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+      - name: Build and start stack
+        run: docker compose up -d --build
+      - name: Verify healthy non-root runtime
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/api/health; then break; fi
+            sleep 2
+          done
+          curl --fail http://127.0.0.1:3000/api/health
+          test "$(docker compose exec -T web id -u)" != "0"
+          docker compose ps -a
+      - name: Faulted release rollback drill
+        run: |
+          previous_image=$(docker inspect --format '{{.Image}}' "$(docker compose ps -q web)")
+          docker commit --change 'ENV PORT=3001' "$(docker compose ps -q web)" "compro-canary:${GITHUB_SHA}"
+          printf 'services:\n  web:\n    image: compro-canary:%s\n' "$GITHUB_SHA" > /tmp/compro-release.yml
+          docker compose -f docker-compose.yml -f /tmp/compro-release.yml up -d --no-deps --no-build web
+          if curl --fail --silent http://127.0.0.1:3000/api/health; then exit 1; fi
+          rollback_started=$(date +%s)
+          printf 'services:\n  web:\n    image: %s\n' "$previous_image" > /tmp/compro-release.yml
+          docker compose -f docker-compose.yml -f /tmp/compro-release.yml up -d --no-deps --no-build web
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/api/health; then break; fi
+            sleep 1
+          done
+          curl --fail http://127.0.0.1:3000/api/health
+          rollback_elapsed=$(( $(date +%s) - rollback_started ))
+          echo "Rollback to immutable image $previous_image completed in $rollback_elapsed seconds"
+          test "$rollback_elapsed" -lt 300
+      - name: Container logs
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Cleanup isolated stack
+        if: always()
+        run: docker compose down -v

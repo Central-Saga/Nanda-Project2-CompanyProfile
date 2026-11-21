@@ -1,21 +1,21 @@
+import { publicTranslations } from "@/lib/translations";
+import { pageMetadata } from "@/lib/seo";
+import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-interface Props {
-  params: Promise<{ slug: string }>;
-}
+import type { SlugPageProps as Props } from "@/types/routes";
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const post = await prisma.post.findUnique({
     where: { slug },
-    include: { translations: { where: { locale: "id" } } },
+    include: { translations: await publicTranslations() },
   });
 
-  return {
-    title: post?.translations[0]?.title || slug,
-  };
+  if (!post || post.status !== "published" || post.deletedAt) notFound();
+  return pageMetadata(post?.translations[0]?.title || slug, `/blog/${encodeURIComponent(slug)}`);
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -23,9 +23,9 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await prisma.post.findUnique({
     where: { slug },
     include: {
-      translations: { where: { locale: "id" } },
+      translations: await publicTranslations(),
       category: {
-        include: { translations: { where: { locale: "id" } } },
+        include: { translations: await publicTranslations() },
       },
     },
   });
@@ -36,7 +36,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const trans = post.translations[0];
   const dateStr = post.publishedAt
-    ? post.publishedAt.toISOString().split("T")[0]
+    ? formatDate(post.publishedAt)
     : "";
 
   return (

@@ -1,6 +1,6 @@
+import { PageHeader } from "@/components/admin";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
 import { CompanyProfileForm } from "./CompanyProfileForm";
 
 export const metadata = {

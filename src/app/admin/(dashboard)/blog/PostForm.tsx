@@ -1,13 +1,15 @@
 "use client";
+import { Input } from "@/components/shared/ui/Input";
 
-import { useActionState, useEffect } from "react";
+import { ContentFormShell } from "@/components/admin/ContentFormShell";
+import { useContentForm } from "@/lib/use-content-form";
+
 import { createPostAction, updatePostAction } from "@/app/actions/post";
 import { FormField } from "@/components/admin/FormField";
 import { SubmitButton } from "@/components/admin/SubmitButton";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-interface PostFormProps {
+export interface PostFormProps {
   categories: { id: string; name: string }[];
   initialData?: {
     id: string;
@@ -24,24 +26,12 @@ interface PostFormProps {
 export function PostForm({ categories, initialData }: PostFormProps) {
   const isEditing = Boolean(initialData);
   const action = isEditing ? updatePostAction : createPostAction;
-  const [state, formAction, isPending] = useActionState(action, null);
-  const router = useRouter();
+  const { state, formAction, isPending } = useContentForm(action);
 
-  useEffect(() => {
-    if (state?.success && state?.redirectUrl) {
-      router.push(state.redirectUrl);
-    }
-  }, [state, router]);
 
   return (
-    <form action={formAction} className="space-y-6 max-w-3xl">
-      {isEditing && <input type="hidden" name="id" value={initialData!.id} />}
+    <ContentFormShell action={formAction} pending={isPending} state={state} id={initialData?.id} className="space-y-6 max-w-3xl">
 
-      {state?.message && !state?.success && (
-        <div className="p-3 bg-red-950/50 border border-red-700/50 text-red-300 text-sm rounded font-mono">
-          {state.message}
-        </div>
-      )}
 
       <div className="p-5 bg-zinc-950 border border-zinc-900 rounded-lg space-y-4">
         <h2 className="text-sm font-bold font-mono uppercase tracking-wider text-zinc-300">
@@ -93,11 +83,11 @@ export function PostForm({ categories, initialData }: PostFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">
+            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1" htmlFor="categoryId">
               Kategori
             </label>
             <select
-              name="categoryId"
+              id="categoryId" name="categoryId"
               defaultValue={initialData?.categoryId || ""}
               className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 text-zinc-100 rounded text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600"
             >
@@ -111,11 +101,11 @@ export function PostForm({ categories, initialData }: PostFormProps) {
           </div>
 
           <div>
-            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">
+            <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1" htmlFor="status">
               Status Publikasi
             </label>
             <select
-              name="status"
+              id="status" name="status"
               defaultValue={initialData?.status || "draft"}
               className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 text-zinc-100 rounded text-sm focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600"
             >
@@ -127,7 +117,7 @@ export function PostForm({ categories, initialData }: PostFormProps) {
 
         <div className="pt-2">
           <label className="flex items-center gap-2 cursor-pointer">
-            <input
+            <Input
               type="checkbox"
               name="isFeatured"
               defaultChecked={initialData ? initialData.isFeatured : false}
@@ -152,6 +142,6 @@ export function PostForm({ categories, initialData }: PostFormProps) {
           Batal
         </Link>
       </div>
-    </form>
+    </ContentFormShell>
   );
 }

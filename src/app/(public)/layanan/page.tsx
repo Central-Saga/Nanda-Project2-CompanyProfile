@@ -1,15 +1,15 @@
+import { publicTranslations } from "@/lib/translations";
+import { pageMetadata } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Layanan Rekayasa Sistem",
-};
+export const metadata = pageMetadata('Layanan Rekayasa Sistem', '/layanan');
 
 export default async function ServicesPage() {
   const services = await prisma.service.findMany({
     where: { isPublished: true, deletedAt: null },
     include: {
-      translations: { where: { locale: "id" } },
+      translations: await publicTranslations(),
     },
     orderBy: { sortOrder: "asc" },
   });

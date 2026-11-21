@@ -1,21 +1,21 @@
+import { publicTranslations } from "@/lib/translations";
+import { ProjectLinks } from "@/components/public/ProjectLinks";
+import { pageMetadata } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-interface Props {
-  params: Promise<{ slug: string }>;
-}
+import type { SlugPageProps as Props } from "@/types/routes";
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const service = await prisma.service.findUnique({
     where: { slug },
-    include: { translations: { where: { locale: "id" } } },
+    include: { translations: await publicTranslations() },
   });
 
-  return {
-    title: service?.translations[0]?.name || slug,
-  };
+  if (!service || !service.isPublished || service.deletedAt) notFound();
+  return pageMetadata(service?.translations[0]?.name || slug, `/layanan/${encodeURIComponent(slug)}`);
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
@@ -23,7 +23,7 @@ export default async function ServiceDetailPage({ params }: Props) {
   const service = await prisma.service.findUnique({
     where: { slug },
     include: {
-      translations: { where: { locale: "id" } },
+      translations: await publicTranslations(),
     },
   });
 
@@ -72,20 +72,7 @@ export default async function ServiceDetailPage({ params }: Props) {
             Kirimkan brief teknis Anda untuk memulai evaluasi arsitektur.
           </p>
         </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <Link
-            href="/mulai-proyek"
-            className="w-full sm:w-auto text-center px-5 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white rounded-xl text-xs font-medium transition shadow-lg"
-          >
-            Mulai Proyek
-          </Link>
-          <Link
-            href="/booking"
-            className="w-full sm:w-auto text-center px-5 py-2.5 bg-white/[0.05] hover:bg-white/[0.1] text-zinc-300 border border-white/[0.1] rounded-xl text-xs font-medium transition"
-          >
-            Konsultasi
-          </Link>
-        </div>
+        <ProjectLinks />
       </div>
     </div>
   );
