@@ -40,7 +40,7 @@ export default async function AdminLayout({
       <aside className="hidden md:flex w-64 border-r border-zinc-900 bg-zinc-950 flex-col shrink-0">
         <div className="p-4 border-b border-zinc-900">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block animate-pulse"></span>
+            <span aria-hidden="true" className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block animate-pulse"></span>
             <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-200">
               Admin Console
             </span>

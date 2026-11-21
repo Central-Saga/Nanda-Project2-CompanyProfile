@@ -1,5 +1,6 @@
 // @vitest-environment node
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
+vi.mock("@prisma/client", () => { throw new Error("JWT verification must not load the Prisma runtime in Edge Functions"); });
 import { SignJWT } from "jose";
 import { getSessionSecret, createSessionToken, verifySessionToken, hashToken } from "@/lib/session";
 const payload = { userId: "a", sessionId: "b", role: "editor" as const };

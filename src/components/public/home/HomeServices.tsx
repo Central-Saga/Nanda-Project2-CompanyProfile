@@ -1,8 +1,9 @@
+import { publicTranslations } from "@/lib/translations";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export async function HomeServices() {
-  const services = await prisma.service.findMany({ where: { isPublished: true, deletedAt: null }, include: { translations: { where: { locale: "id" } } }, orderBy: [{ sortOrder: "asc" }, { id: "asc" }], take: 6 });
+  const services = await prisma.service.findMany({ where: { isPublished: true, deletedAt: null }, include: { translations: await publicTranslations() }, orderBy: [{ sortOrder: "asc" }, { id: "asc" }], take: 6 });
   if (!services.length) return null;
   return (
         <section className="py-24 border-b border-white/[0.06]">

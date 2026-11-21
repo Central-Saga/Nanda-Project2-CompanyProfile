@@ -20,7 +20,8 @@
     "audit:duplicates": "jscpd src --threshold 3 --reporters console",
     "test:seed": "tsx scripts/seed-e2e.ts",
     "audit:lighthouse": "lhci autorun",
-    "audit:bundle": "node --import tsx scripts/check-bundle.ts"
+    "audit:bundle": "node --import tsx scripts/check-bundle.ts",
+    "verify:storage": "node --import tsx scripts/check-storage.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",

@@ -1,6 +1,7 @@
 "use client";
 import { ContactFields } from "@/components/public/ContactFields";
-import { FormFeedback } from "@/components/public/FormFeedback";
+import { PublicFormIntro } from "@/components/public/PublicFormIntro";
+import { PrivacyConsent } from "@/components/public/PrivacyConsent";
 import { Input } from "@/components/shared/ui/Input";
 
 import { SmartForm } from "@/components/shared/SmartForm";
@@ -14,16 +15,7 @@ export function ContactForm() {
 
   return (
     <SmartForm action={formAction} pending={isPending} success={state?.success} className="space-y-4 max-w-xl">
-      <FormFeedback state={state} />
-
-      {/* Honeypot field (hidden from real users) */}
-      <Input
-        type="text"
-        name="websiteUrl"
-        hidden
-        tabIndex={-1}
-        autoComplete="off"
-      />
+      <PublicFormIntro state={state} />
 
       <ContactFields errors={state?.errors} />
 
@@ -59,22 +51,7 @@ export function ContactForm() {
         )}
       </div>
 
-      <div className="pt-2">
-        <label className="flex items-start gap-2 cursor-pointer">
-          <Input
-            type="checkbox"
-            name="consentPrivacy"
-            required
-            className="mt-1 rounded bg-zinc-900 border-zinc-800 text-red-600 focus:ring-0"
-          />
-          <span className="text-xs text-zinc-400 font-sans">
-            Saya menyetujui bahwa data kontak ini disimpan di database internal untuk keperluan komunikasi teknis dan profesional.
-          </span>
-        </label>
-        {state?.errors?.consentPrivacy && (
-          <p className="text-xs text-red-400 mt-1">{state.errors.consentPrivacy[0]}</p>
-        )}
-      </div>
+      <PrivacyConsent errors={state?.errors?.consentPrivacy} text="Saya menyetujui bahwa data kontak ini disimpan di database internal untuk keperluan komunikasi teknis dan profesional." />
 
       <div className="pt-2">
         <SubmitButton pending={isPending} label="Kirim Pesan Kontak" />

@@ -1,10 +1,9 @@
+import { AdminTable, PageHeader, EmptyState } from "@/components/admin";
 import { formatDateTime } from "@/lib/format";
 import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
 import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
-import { EmptyState } from "@/components/admin/EmptyState";
 
 export default async function AuditLogsPage({ searchParams }: { searchParams: PageSearchParams }) {
   await requireAuth();
@@ -33,19 +32,7 @@ export default async function AuditLogsPage({ searchParams }: { searchParams: Pa
           />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono">
-<caption className="sr-only">Audit Logs</caption>
-              <thead className="bg-zinc-900/50 text-zinc-400 border-b border-zinc-800 uppercase text-[11px] tracking-wider">
-                <tr>
-                  <th scope="col" className="py-3 px-4">Waktu</th>
-                  <th scope="col" className="py-3 px-4">Pelaku</th>
-                  <th scope="col" className="py-3 px-4">Aksi</th>
-                  <th scope="col" className="py-3 px-4">Entitas</th>
-                  <th scope="col" className="py-3 px-4">ID Entitas</th>
-                  <th scope="col" className="py-3 px-4">Data</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-900 text-zinc-300">
+            <AdminTable caption="Audit Logs" headers={["Waktu", "Pelaku", "Aksi", "Entitas", "ID Entitas", "Data"]}>
                 {logs.map((log) => (
                   <tr key={log.id} className="hover:bg-zinc-900/30">
                     <td className="py-3 px-4 text-zinc-500 whitespace-nowrap">
@@ -70,8 +57,7 @@ export default async function AuditLogsPage({ searchParams }: { searchParams: Pa
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
+              </AdminTable>
           </div>
         )}
       </div>

@@ -1,5 +1,6 @@
 "use server";
 
+import { readPublicIdentity } from "@/lib/form-data";
 import { findOrCreateLead } from "@/lib/public-lead";
 import { prisma } from "@/lib/prisma";
 import {
@@ -21,14 +22,9 @@ export async function submitContactAction(
   formData: FormData
 ): Promise<FormActionResult> {
   const rawData = {
-    fullName: formData.get("fullName"),
-    email: formData.get("email"),
-    phone: formData.get("phone") || "",
-    companyName: formData.get("companyName") || "",
+    ...readPublicIdentity(formData),
     subject: formData.get("subject"),
     message: formData.get("message"),
-    consentPrivacy: formData.get("consentPrivacy") === "on",
-    websiteUrl: formData.get("websiteUrl") || "", // Honeypot
   };
 
   const validated = publicContactSchema.safeParse(rawData);
@@ -84,18 +80,13 @@ export async function submitBriefAction(
   formData: FormData
 ): Promise<FormActionResult> {
   const rawData = {
-    fullName: formData.get("fullName"),
-    email: formData.get("email"),
-    phone: formData.get("phone") || "",
-    companyName: formData.get("companyName") || "",
+    ...readPublicIdentity(formData),
     projectType: formData.get("projectType"),
     budgetRange: formData.get("budgetRange") || "",
     targetTimeline: formData.get("targetTimeline") || "",
     overview: formData.get("overview"),
     goals: formData.get("goals") || "",
     targetAudience: formData.get("targetAudience") || "",
-    consentPrivacy: formData.get("consentPrivacy") === "on",
-    websiteUrl: formData.get("websiteUrl") || "", // Honeypot
   };
 
   const validated = publicBriefSchema.safeParse(rawData);
@@ -162,15 +153,10 @@ export async function submitBookingAction(
   formData: FormData
 ): Promise<FormActionResult> {
   const rawData = {
-    fullName: formData.get("fullName"),
-    email: formData.get("email"),
-    phone: formData.get("phone") || "",
-    companyName: formData.get("companyName") || "",
+    ...readPublicIdentity(formData),
     preferredDate: formData.get("preferredDate"),
     preferredTimeSlot: formData.get("preferredTimeSlot"),
     topic: formData.get("topic"),
-    consentPrivacy: formData.get("consentPrivacy") === "on",
-    websiteUrl: formData.get("websiteUrl") || "", // Honeypot
   };
 
   const validated = publicBookingSchema.safeParse(rawData);

@@ -1,8 +1,9 @@
+import { publicTranslations } from "@/lib/translations";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export async function HomePortfolio() {
-  const projects = await prisma.project.findMany({ where: { isPublished: true, deletedAt: null }, include: { translations: { where: { locale: "id" } } }, orderBy: [{ createdAt: "desc" }, { id: "asc" }], take: 4 });
+  const projects = await prisma.project.findMany({ where: { isPublished: true, deletedAt: null }, include: { translations: await publicTranslations() }, orderBy: [{ createdAt: "desc" }, { id: "asc" }], take: 4 });
   if (!projects.length) return null;
   return (
         <section className="py-24 border-b border-white/[0.06]">

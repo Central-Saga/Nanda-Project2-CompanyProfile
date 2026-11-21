@@ -1,4 +1,5 @@
 "use server";
+import { validationFailure } from "@/lib/validation-result";
 import { readServiceForm } from "@/lib/form-data";
 
 import { prisma } from "@/lib/prisma";
@@ -13,11 +14,9 @@ export async function createServiceAction(
 ): Promise<ActionState> {
   const user = await requireAuth();
 
-  const rawData = readServiceForm(formData);
-
-  const parsed = serviceSchema.safeParse(rawData);
+  const parsed = serviceSchema.safeParse(readServiceForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -70,11 +69,9 @@ export async function updateServiceAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID layanan tidak ditemukan" };
 
-  const rawData = readServiceForm(formData);
-
-  const parsed = serviceSchema.safeParse(rawData);
+  const parsed = serviceSchema.safeParse(readServiceForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;

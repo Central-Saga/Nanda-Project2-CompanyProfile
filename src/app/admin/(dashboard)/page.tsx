@@ -1,7 +1,7 @@
+import { PageHeader } from "@/components/admin";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/format";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
 import Link from "next/link";
 
 export default async function DashboardPage() {
@@ -71,8 +71,11 @@ export default async function DashboardPage() {
             </div>
             <div className="text-2xl font-bold font-mono text-zinc-100 flex items-center justify-between">
               <span>{formatNumber(s.value)}</span>
-              {s.alert && <span className="w-2 h-2 rounded-full bg-red-600" />}
+              {s.alert && <span aria-hidden="true" className="w-2 h-2 rounded-full bg-red-600" />}
             </div>
+            {s.alert && (
+              <div className="text-xs font-mono text-zinc-300">Perlu ditinjau</div>
+            )}
           </Link>
         ))}
       </div>

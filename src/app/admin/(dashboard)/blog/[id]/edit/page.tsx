@@ -1,6 +1,6 @@
+import { PageHeader } from "@/components/admin";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
 import { PostForm } from "../../PostForm";
 import { notFound } from "next/navigation";
 

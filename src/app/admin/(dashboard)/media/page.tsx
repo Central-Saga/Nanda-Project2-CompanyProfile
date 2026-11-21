@@ -1,9 +1,8 @@
+import { AdminTable, PageHeader, EmptyState } from "@/components/admin";
 import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
 import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
-import { EmptyState } from "@/components/admin/EmptyState";
 import dynamic from "next/dynamic";
 const MediaUploader = dynamic(() => import("./MediaUploader").then((module) => module.MediaUploader));
 import { DeleteMediaButton } from "./DeleteMediaButton";
@@ -37,18 +36,7 @@ export default async function MediaPage({ searchParams }: { searchParams: PageSe
           />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono">
-<caption className="sr-only">Media</caption>
-              <thead className="bg-zinc-900/50 text-zinc-400 border-b border-zinc-800 uppercase text-[11px] tracking-wider">
-                <tr>
-                  <th scope="col" className="py-3 px-4">Nama Berkas</th>
-                  <th scope="col" className="py-3 px-4">Tipe & Ukuran</th>
-                  <th scope="col" className="py-3 px-4">Kunci Storage</th>
-                  <th scope="col" className="py-3 px-4">Tautan</th>
-                  <th scope="col" className="py-3 px-4 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-900 text-zinc-300">
+            <AdminTable caption="Media" headers={["Nama Berkas", "Tipe & Ukuran", "Kunci Storage", "Tautan", "Aksi"]}>
                 {mediaList.map((item) => (
                   <tr key={item.id} className="hover:bg-zinc-900/30">
                     <td className="py-3 px-4">
@@ -83,8 +71,7 @@ export default async function MediaPage({ searchParams }: { searchParams: PageSe
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
+              </AdminTable>
           </div>
         )}
       </div>

@@ -1,18 +1,17 @@
+import { publicTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export interface Props {
-  params: Promise<{ slug: string }>;
-}
+import type { SlugPageProps as Props } from "@/types/routes";
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const post = await prisma.post.findUnique({
     where: { slug },
-    include: { translations: { where: { locale: "id" } } },
+    include: { translations: await publicTranslations() },
   });
 
   if (!post || post.status !== "published" || post.deletedAt) notFound();
@@ -24,9 +23,9 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await prisma.post.findUnique({
     where: { slug },
     include: {
-      translations: { where: { locale: "id" } },
+      translations: await publicTranslations(),
       category: {
-        include: { translations: { where: { locale: "id" } } },
+        include: { translations: await publicTranslations() },
       },
     },
   });

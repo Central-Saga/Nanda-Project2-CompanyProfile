@@ -1,9 +1,10 @@
+import { publicTranslations } from "@/lib/translations";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
 
 export async function HomePosts() {
-  const posts = await prisma.post.findMany({ where: { status: "published", deletedAt: null }, include: { translations: { where: { locale: "id" } } }, orderBy: [{ publishedAt: "desc" }, { id: "asc" }], take: 3 });
+  const posts = await prisma.post.findMany({ where: { status: "published", deletedAt: null }, include: { translations: await publicTranslations() }, orderBy: [{ publishedAt: "desc" }, { id: "asc" }], take: 3 });
   if (!posts.length) return null;
   return (
         <section className="py-24 border-b border-white/[0.06]">

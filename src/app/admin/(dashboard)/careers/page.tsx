@@ -1,10 +1,8 @@
-import { RowActions } from "@/components/admin/RowActions";
+import { AdminTable, RowActions, PageHeader, EmptyState } from "@/components/admin";
 import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
 import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
-import { EmptyState } from "@/components/admin/EmptyState";
 import { DeleteJobButton } from "./DeleteJobButton";
 import Link from "next/link";
 
@@ -53,19 +51,7 @@ export default async function CareersPage({ searchParams }: { searchParams: Page
         />
       ) : (
         <div className="border border-zinc-900 rounded-lg overflow-x-auto bg-zinc-950">
-          <table className="w-full text-left text-xs font-mono">
-<caption className="sr-only">Careers</caption>
-            <thead className="bg-zinc-900/60 text-zinc-400 uppercase tracking-wider border-b border-zinc-900">
-              <tr>
-                <th scope="col" className="py-3 px-4">Posisi</th>
-                <th scope="col" className="py-3 px-4">Departemen</th>
-                <th scope="col" className="py-3 px-4">Mode</th>
-                <th scope="col" className="py-3 px-4">Pelamar</th>
-                <th scope="col" className="py-3 px-4">Status</th>
-                <th scope="col" className="py-3 px-4 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-900 text-zinc-300">
+          <AdminTable caption="Careers" headers={["Posisi", "Departemen", "Mode", "Pelamar", "Status", "Aksi"]}>
               {jobs.map((item) => {
                 const trans = item.translations[0];
                 return (
@@ -101,8 +87,7 @@ export default async function CareersPage({ searchParams }: { searchParams: Page
                   </tr>
                 );
               })}
-            </tbody>
-          </table>
+            </AdminTable>
         </div>
       )}
     <Pagination page={paging.page} hasNext={rows.length > PAGE_SIZE} />

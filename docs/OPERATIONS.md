@@ -21,7 +21,7 @@ docker compose up -d --build
 
 Service migrate menerapkan skema sebelum web dimulai. CI job `containers` membangun stack, menjalankan migration, memeriksa health dan UID non-root pada runner yang memiliki akses Docker. Database tidak dipublikasikan ke host. `/api/health` memeriksa koneksi database
 untuk healthcheck tanpa mengungkap detail error. Storage S3 dikonfigurasi terpisah;
-bucket privat dan Block Public Access harus aktif. Semua upload baru disajikan
+bucket privat dan Block Public Access harus aktif. Credential server memerlukan GetBucketPolicy; upload ditolak bila kebijakan tidak dapat diverifikasi atau mengizinkan Principal publik. Semua upload baru disajikan
 melalui download admin terautentikasi, sebagai attachment.
 
 ## Release dan rollback
@@ -36,8 +36,7 @@ PR. Promosikan deployment yang telah lolos CI. Untuk rollback Netlify:
 
 Untuk container gunakan tag/digest image release sebelumnya lalu
 `docker compose up -d --no-deps web`. Jangan rollback skema dengan menghapus data;
-perubahan skema harus kompatibel dengan release sebelumnya. Prosedur ini belum
-membuktikan durasi rollback produksi sampai drill produksi dilakukan.
+perubahan skema harus kompatibel dengan release sebelumnya. CI melakukan drill rollback terisolasi: membuat release dengan port salah, memastikan health gagal, lalu memulihkan image immutable sebelumnya dan mengukur waktu hingga health kembali. Bukti ini tidak menggantikan drill pada akun Netlify produksi.
 
 ## Monitoring dan feature flag
 

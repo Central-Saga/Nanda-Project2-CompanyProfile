@@ -1,9 +1,8 @@
+import { AdminTable, PageHeader, EmptyState } from "@/components/admin";
 import { PAGE_SIZE, readPage, type PageSearchParams } from "@/lib/pagination";
 import { Pagination } from "@/components/shared/ui/Pagination";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
-import { EmptyState } from "@/components/admin/EmptyState";
 import { LeadStatusSelector } from "./LeadStatusSelector";
 
 export const metadata = {
@@ -39,19 +38,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: PageSe
         />
       ) : (
         <div className="border border-zinc-900 rounded-lg overflow-x-auto bg-zinc-950">
-          <table className="w-full text-left text-xs font-mono">
-<caption className="sr-only">Leads</caption>
-            <thead className="bg-zinc-900/60 text-zinc-400 uppercase tracking-wider border-b border-zinc-900">
-              <tr>
-                <th scope="col" className="py-3 px-4">Nama Lengkap</th>
-                <th scope="col" className="py-3 px-4">Kontak</th>
-                <th scope="col" className="py-3 px-4">Perusahaan</th>
-                <th scope="col" className="py-3 px-4">Sumber</th>
-                <th scope="col" className="py-3 px-4">Brief / Pesan</th>
-                <th scope="col" className="py-3 px-4">Status Lead</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-900 text-zinc-300">
+          <AdminTable caption="Leads" headers={["Nama Lengkap", "Kontak", "Perusahaan", "Sumber", "Brief / Pesan", "Status Lead"]}>
               {leads.map((lead) => (
                 <tr key={lead.id} className="hover:bg-zinc-900/30 transition">
                   <td className="py-3 px-4 font-medium text-zinc-100 font-sans">
@@ -83,8 +70,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: PageSe
                   </td>
                 </tr>
               ))}
-            </tbody>
-          </table>
+            </AdminTable>
         </div>
       )}
     <Pagination page={paging.page} hasNext={rows.length > PAGE_SIZE} />

@@ -1,7 +1,7 @@
+import { PageHeader } from "@/components/admin";
 import { dateInput } from "@/lib/format";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageHeader } from "@/components/admin/PageHeader";
 import { ProjectForm } from "../../ProjectForm";
 import { notFound } from "next/navigation";
 

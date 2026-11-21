@@ -1,3 +1,4 @@
+import { publicTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -9,9 +10,9 @@ export default async function BlogPage() {
   const posts = await prisma.post.findMany({
     where: { status: "published", deletedAt: null },
     include: {
-      translations: { where: { locale: "id" } },
+      translations: await publicTranslations(),
       category: {
-        include: { translations: { where: { locale: "id" } } },
+        include: { translations: await publicTranslations() },
       },
     },
     orderBy: { publishedAt: "desc" },

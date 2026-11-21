@@ -1,4 +1,6 @@
 "use server";
+import { projectFields, projectTranslation } from "@/lib/content-data";
+import { validationFailure } from "@/lib/validation-result";
 import { readProjectForm } from "@/lib/form-data";
 
 import { prisma } from "@/lib/prisma";
@@ -13,11 +15,9 @@ export async function createProjectAction(
 ): Promise<ActionState> {
   const user = await requireAuth();
 
-  const rawData = readProjectForm(formData);
-
-  const parsed = projectSchema.safeParse(rawData);
+  const parsed = projectSchema.safeParse(readProjectForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -29,24 +29,11 @@ export async function createProjectAction(
 
   const project = await prisma.project.create({
     data: {
-      slug: data.slug,
-      projectUrl: data.projectUrl || null,
-      startedAt: data.startedAt ? new Date(data.startedAt) : null,
-      completedAt: data.completedAt ? new Date(data.completedAt) : null,
-      durationMonths: data.durationMonths ? Number(data.durationMonths) : null,
-      teamSize: data.teamSize ? Number(data.teamSize) : null,
-      isFeatured: data.isFeatured,
-      isPublished: data.isPublished,
-      sortOrder: data.sortOrder,
+      ...projectFields(data),
       translations: {
         create: {
           locale: "id",
-          title: data.title,
-          summary: data.summary || null,
-          challenge: data.challenge || null,
-          solution: data.solution || null,
-          result: data.result || null,
-          content: data.content || null,
+          ...projectTranslation(data),
         },
       },
     },
@@ -77,11 +64,9 @@ export async function updateProjectAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID proyek tidak ditemukan" };
 
-  const rawData = readProjectForm(formData);
-
-  const parsed = projectSchema.safeParse(rawData);
+  const parsed = projectSchema.safeParse(readProjectForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -101,34 +86,16 @@ export async function updateProjectAction(
   await prisma.project.update({
     where: { id },
     data: {
-      slug: data.slug,
-      projectUrl: data.projectUrl || null,
-      startedAt: data.startedAt ? new Date(data.startedAt) : null,
-      completedAt: data.completedAt ? new Date(data.completedAt) : null,
-      durationMonths: data.durationMonths ? Number(data.durationMonths) : null,
-      teamSize: data.teamSize ? Number(data.teamSize) : null,
-      isFeatured: data.isFeatured,
-      isPublished: data.isPublished,
-      sortOrder: data.sortOrder,
+      ...projectFields(data),
       translations: {
         upsert: {
           where: { projectId_locale: { projectId: id, locale: "id" } },
           create: {
             locale: "id",
-            title: data.title,
-            summary: data.summary || null,
-            challenge: data.challenge || null,
-            solution: data.solution || null,
-            result: data.result || null,
-            content: data.content || null,
+          ...projectTranslation(data),
           },
           update: {
-            title: data.title,
-            summary: data.summary || null,
-            challenge: data.challenge || null,
-            solution: data.solution || null,
-            result: data.result || null,
-            content: data.content || null,
+          ...projectTranslation(data),
           },
         },
       },

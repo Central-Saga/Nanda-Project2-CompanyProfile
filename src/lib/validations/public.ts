@@ -19,6 +19,14 @@ const identityFields = {
     .or(z.literal("")),
 };
 
+const consentFields = {
+  consentPrivacy: z
+    .boolean()
+    .refine((val) => val === true, "Anda wajib menyetujui kebijakan privasi"),
+  // Honeypot field - must be empty
+  websiteUrl: z.string().max(0, "Bot detected").optional().or(z.literal("")),
+};
+
 // 1. Contact Form Schema (/kontak)
 export const publicContactSchema = z.object({
   ...identityFields,
@@ -30,11 +38,7 @@ export const publicContactSchema = z.object({
     .string()
     .min(10, "Pesan minimal 10 karakter")
     .max(5000, "Pesan maksimal 5000 karakter"),
-  consentPrivacy: z
-    .boolean()
-    .refine((val) => val === true, "Anda wajib menyetujui kebijakan privasi"),
-  // Honeypot field - must be empty
-  websiteUrl: z.string().max(0, "Bot detected").optional().or(z.literal("")),
+  ...consentFields,
 });
 
 // 2. Project Brief Schema (/mulai-proyek)
@@ -67,10 +71,7 @@ export const publicBriefSchema = z.object({
     .max(2000, "Pengguna target maksimal 2000 karakter")
     .optional()
     .or(z.literal("")),
-  consentPrivacy: z
-    .boolean()
-    .refine((val) => val === true, "Anda wajib menyetujui kebijakan privasi"),
-  websiteUrl: z.string().max(0, "Bot detected").optional().or(z.literal("")),
+  ...consentFields,
 });
 
 // 3. Consultation Booking Schema (/booking)
@@ -91,8 +92,5 @@ export const publicBookingSchema = z.object({
     .string()
     .min(10, "Topik konsultasi minimal 10 karakter")
     .max(1000, "Topik konsultasi maksimal 1000 karakter"),
-  consentPrivacy: z
-    .boolean()
-    .refine((val) => val === true, "Anda wajib menyetujui kebijakan privasi"),
-  websiteUrl: z.string().max(0, "Bot detected").optional().or(z.literal("")),
+  ...consentFields,
 });

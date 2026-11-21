@@ -26,7 +26,7 @@ export function StatusSelector({ resource, id, currentStatus, options }: StatusS
       setOptimistic(null); setError(reason instanceof ApiRequestError ? reason.message : "Status belum tersimpan. Silakan coba lagi.");
     } finally { setPending(false); }
   }
-  return <div><select aria-label={`Status ${resource}`} value={optimistic ?? currentStatus} disabled={pending} onChange={(e) => void save(e.target.value)} className="rounded border border-zinc-700 bg-zinc-900 px-2 text-xs">
+  return <div className="relative"><select aria-label={`Status ${resource}`} value={optimistic ?? currentStatus} disabled={pending} onChange={(e) => void save(e.target.value)} className="rounded border border-zinc-700 bg-zinc-900 px-2 text-xs">
     {options.map((value) => <option key={value} value={value}>{value.toUpperCase()}</option>)}</select>
     {pending && <span role="status" className="sr-only">Menyimpan status</span>}
     {error && <p role="alert" className="max-w-xs text-sm text-red-300">{error}<Button onClick={() => void save(desired.current)}>Coba lagi</Button></p>}</div>;

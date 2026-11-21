@@ -1,3 +1,4 @@
+import { publicTranslations } from "@/lib/translations";
 import { pageMetadata } from "@/lib/seo";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
@@ -8,7 +9,7 @@ export default async function PortfolioPage() {
   const projects = await prisma.project.findMany({
     where: { isPublished: true, deletedAt: null },
     include: {
-      translations: { where: { locale: "id" } },
+      translations: await publicTranslations(),
     },
     orderBy: { createdAt: "desc" },
   });

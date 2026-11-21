@@ -1,4 +1,5 @@
 "use server";
+import { validationFailure } from "@/lib/validation-result";
 import { readPostForm } from "@/lib/form-data";
 
 import { prisma } from "@/lib/prisma";
@@ -13,11 +14,9 @@ export async function createPostAction(
 ): Promise<ActionState> {
   const user = await requireAuth();
 
-  const rawData = readPostForm(formData);
-
-  const parsed = postSchema.safeParse(rawData);
+  const parsed = postSchema.safeParse(readPostForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;
@@ -71,11 +70,9 @@ export async function updatePostAction(
   const id = formData.get("id") as string;
   if (!id) return { success: false, message: "ID artikel tidak ditemukan" };
 
-  const rawData = readPostForm(formData);
-
-  const parsed = postSchema.safeParse(rawData);
+  const parsed = postSchema.safeParse(readPostForm(formData));
   if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten().fieldErrors };
+    return validationFailure(parsed.error);
   }
 
   const data = parsed.data;

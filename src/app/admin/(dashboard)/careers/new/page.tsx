@@ -1,4 +1,4 @@
-import { PageHeader } from "@/components/admin/PageHeader";
+import { PageHeader } from "@/components/admin";
 import { JobForm } from "../JobForm";
 
 export const metadata = {

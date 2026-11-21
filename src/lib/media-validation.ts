@@ -44,6 +44,7 @@ export async function validateMediaContents(buffer: Buffer, declaredType: string
     const { default: sharp } = await import("sharp");
     // Decode the entire image, reject decompression bombs, then strip metadata/trailing payloads.
     const clean = await sharp(buffer, { limitInputPixels: 40_000_000, failOn: "warning" }).rotate().toBuffer();
+    if (clean.length > MAX_FILE_SIZE) throw new Error("Hasil decoding melebihi 10MB.");
     return { ...detected, buffer: clean };
   }
   const { PDFDocument, PDFDict, PDFName } = await import("pdf-lib");
@@ -58,5 +59,7 @@ export async function validateMediaContents(buffer: Buffer, declaredType: string
       if (action && ["/JavaScript", "/Launch", "/GoToR", "/SubmitForm", "/ImportData"].includes(action.toString())) throw new Error("Aksi PDF tidak diizinkan.");
     }
   }
-  return { ...detected, buffer: Buffer.from(await pdf.save()) };
+  const clean = Buffer.from(await pdf.save());
+  if (clean.length > MAX_FILE_SIZE) throw new Error("Hasil normalisasi melebihi 10MB.");
+  return { ...detected, buffer: clean };
 }

@@ -63,3 +63,6 @@ export function readJobForm(formData: FormData) {
   };
 }
 
+export function readPublicIdentity(formData: FormData) {
+  return { fullName: formData.get("fullName"), email: formData.get("email"), phone: formData.get("phone") || "", companyName: formData.get("companyName") || "", consentPrivacy: formData.get("consentPrivacy") === "on", websiteUrl: formData.get("websiteUrl") || "" };
+}

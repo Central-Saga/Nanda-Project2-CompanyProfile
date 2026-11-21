@@ -5,20 +5,12 @@ import { Button } from "@/components/shared/ui/Button";
 
 import { SmartForm } from "@/components/shared/SmartForm";
 
-import { useActionState } from "react";
+import { useContentForm } from "@/lib/use-content-form";
 import { loginAction } from "@/app/actions/auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export function LoginForm() {
-  const [state, formAction, isPending] = useActionState(loginAction, null);
-  const router = useRouter();
+  const { state, formAction, isPending } = useContentForm(loginAction);
 
-  useEffect(() => {
-    if (state?.success && state?.redirectUrl) {
-      router.push(state.redirectUrl);
-    }
-  }, [state, router]);
 
   return (
     <SmartForm action={formAction} pending={isPending} success={state?.success} className="space-y-4">
